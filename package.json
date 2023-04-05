@@ -1,0 +1,25 @@
+{
+  "name": "izyware-aws",
+  "version": "1.0.8",
+  "description": "IzyWare AWS Package",
+  "main": "index.js",
+  "scripts": {
+    "query": "node node_modules/izy-proxy/cli.js call query?sql",
+    "rekey": "node node_modules/izy-proxy/cli.js call rekey?table",
+    "test": "node node_modules/izy-proxy/cli.js callpretty test/basic?test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/izyware/apps-sqlconsole-rekey"
+  },
+  "dependencies": {
+    "mysql": "2.18.1",
+    "izy-proxy": "latest"
+  },
+  "keywords": [
+    "izyware",
+    "aws"
+  ],
+  "author": "Izyware Inc",
+  "license": "MIT"
+}
