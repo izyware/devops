@@ -78,3 +78,15 @@ You may get the following error when trying to SSH into the EC2 instance:
 To fix this chmod to
 
     chmod 400 private.pem
+    
+# Codebuild CLI
+You can check the latest build status and logs by:
+
+    npm run codebuild.check queryObject.izyUser 86 queryObject.showLogs true queryObject.projectName myProject 
+
+
+# ChangeLog
+
+## V6.8
+* 6800002: Codebuild migration
+* 6800001: initial migration
