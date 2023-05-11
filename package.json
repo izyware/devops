@@ -4,7 +4,8 @@
   "description": "IzyWare AWS Package",
   "main": "index.js",
   "scripts": {
-    "codebuild.check": "node node_modules/izy-proxy/cli.js call codebuild?check"
+    "codebuild.check": "node node_modules/izy-proxy/cli.js callpretty codebuild?check",
+    "codebuild.projectDetails": "node node_modules/izy-proxy/cli.js callpretty codebuild?projectDetails"
   },
   "repository": {
     "type": "git",

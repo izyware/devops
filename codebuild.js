@@ -1,6 +1,21 @@
 /* izy-loadobject nodejs-require */
 module.exports = (function() {
   const modtask = () => {};
+  modtask.projectDetails = async queryObject => {
+    const run = require('izy-proxy/asyncio')(modtask).run;
+    var cfg = queryObject;
+    const { izyUser } = queryObject;
+    const verbose = queryObject.verbose || {};
+
+    const data = (await run('//inline/aws.chain?runAWSCommand', {
+      cmd: 'aws codebuild batch-get-projects --names ' + cfg.projectName,
+      izyUser,
+      verbose
+    })).data.projects[0];
+
+    return { success: true, data };
+  }
+
   modtask.check = async queryObject => {
     const run = require('izy-proxy/asyncio')(modtask).run;
     var cfg = queryObject;

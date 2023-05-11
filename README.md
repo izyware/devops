@@ -82,11 +82,27 @@ To fix this chmod to
 # Codebuild CLI
 You can check the latest build status and logs by:
 
-    npm run codebuild.check queryObject.izyUser 86 queryObject.showLogs true queryObject.projectName myProject 
+    npm run codebuild.check queryObject.izyUser 86 queryObject.showLogs true queryObject.projectName myProject
+    
+Exploring codebuild setup and viewing a build projects details
+    
+    npm run codebuild.projectDetails queryObject.izyUser 86 queryObject.showLogs true queryObject.projectName myProject 
+
+
+# Links
+[github]
 
 
 # ChangeLog
 
+## V6.9
+* 6900001: Codebuild - implement projectDetails
+    * useful for exploring codebuild setup and viewing a build projects details in AWS CodeBuild
+    * utilize callpretty for better output
+    * add verbose logging
+
 ## V6.8
 * 6800002: Codebuild migration
 * 6800001: initial migration
+
+[github]: https://github.com/izyware/aws

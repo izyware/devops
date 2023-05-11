@@ -19,13 +19,15 @@ module.exports = (function() {
   }
 
   modtask.runAWSCommand = async queryObject => {
-    let { cmd, izyUser, format} = queryObject;
+    let { cmd, izyUser, format, verbose } = queryObject;
+    if (!verbose) verbose = {};
     if (!izyUser) return { reason: 'specify izyUser for AWS command. i.e. 86 '};
     if (!format) format = 'json';
     cmd = generateFinalCmd(cmd, izyUser);
     return await run('//inline/lib/shell?exec', {
       cmd,
-      format
+      format,
+      verbose: verbose.shell
     });
   }
   return modtask;
