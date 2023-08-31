@@ -94,6 +94,7 @@ To fix this chmod to
 
     chmod 400 private.pem
     
+
 # AWS Quirks
 Use the following tools and processes to workaround the issues from aws.
 
@@ -164,6 +165,16 @@ Make sure to invalidate the cloudfront distribution after the push
     * viewer_certificate block for cloudfront will only accept certificates that are in us-east-1, regardless of your region.
 
 
+# Docker 
+When running out of space, do
+
+    deleteall.sh
+    
+If you have a stateful container (i.e. mysql), you should stop and delete its state by 
+
+    killanddeletedata.sh grepStr (mysql)
+
+
 # Links
 [github]
 
@@ -171,6 +182,7 @@ Make sure to invalidate the cloudfront distribution after the push
 # ChangeLog
 
 ## V6.9
+* 6900004: add dockertools scripts
 * 6900003: add dockertools/serviceprobe
 * 6900002: add apps/static-website sample app with terraform 
 * 6900001: Codebuild - implement projectDetails
