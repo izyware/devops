@@ -107,6 +107,15 @@ Exploring codebuild setup and viewing a build projects details
     
     npm run codebuild.projectDetails queryObject.izyUser 86 queryObject.projectName myProject 
     
+
+To debug your code build scripts (buildspec.*) use the provided docker Image:
+
+    docker build -f codebuild/Dockerfile -t izy-aws-codebuild:7.0  .;
+    
+You can then shell into the environment and run your commands:
+
+    docker run -v /var/run/docker.sock:/var/run/docker.sock -v `echo ~/.aws`:/root/.aws -v `pwd`:/izyhost/src -it --entrypoint sh izy-aws-codebuild:7.0 -c bash
+    
     
 If your application generates or uses docker containers as part of its CICD, you will need to use privilaged mode inside codebuild. Notice that the filesystem/volume mapping and network interfaces addresses can get confusing in this case. The most common issue reported on MacOS platforms vs Linux (Codebuild) is that the docker-compose volume mapping (using the volumes block) on Mac will only work if full path to host operating system is provided.
 
@@ -182,6 +191,7 @@ If you have a stateful container (i.e. mysql), you should stop and delete its st
 # ChangeLog
 
 ## V6.9
+* 6900005: add codebuild docker image
 * 6900004: add dockertools scripts
 * 6900003: add dockertools/serviceprobe
 * 6900002: add apps/static-website sample app with terraform 
