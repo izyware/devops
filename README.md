@@ -94,7 +94,10 @@ To fix this chmod to
 
     chmod 400 private.pem
     
-# Codebuild CLI
+# AWS Quirks
+Use the following tools and processes to workaround the issues from aws.
+
+## Codebuild
 You can check the latest build status and logs by:
 
     npm run codebuild.check queryObject.izyUser 86 queryObject.showLogs true queryObject.projectName myProject
@@ -102,10 +105,24 @@ You can check the latest build status and logs by:
 Exploring codebuild setup and viewing a build projects details
     
     npm run codebuild.projectDetails queryObject.izyUser 86 queryObject.projectName myProject 
+    
+    
+If your application generates or uses docker containers as part of its CICD, you will need to use privilaged mode inside codebuild. Notice that the filesystem/volume mapping and network interfaces addresses can get confusing in this case. The most common issue reported on MacOS platforms vs Linux (Codebuild) is that the docker-compose volume mapping (using the volumes block) on Mac will only work if full path to host operating system is provided.
+
+You may use the dockertools/serviceprobe docker image to troubleshoot these issues. Refer to the Dockerfile for more information and examples about how to use the tool. Notice that if you are using dockercompose you can specifiy the following in the environment section:
 
 
-# TerraForm 
-We recommend using the TerraForm docker image. We provide template apps in the apps folder. As an example, to quickly setup and deploy a static website for a domain follow these steps:
+    ENV CONTAINER_CONTEXT: Service Probe
+    ENV SLEEP_SECONDS: 5
+    ENV CMD_TO_RUN: /usr/bin/nc -vz localhost 3306
+
+
+## Route53
+* Redirect apex domain to www using Route 53: You should create an S3 bucket, Properties > Static website hosting and setup Redirect requests. Once thats setup, you can add a record for A - IPv4 address. Select Yes for Alias, and enter the S3 bucket you created earlier.
+
+
+# Terraform 
+We recommend using the Terraform docker image. We provide template apps in the apps folder. As an example, to quickly setup and deploy a static website for a domain follow these steps:
 
 
 Deep clone the app directory:
@@ -121,7 +138,7 @@ Make sure that you dont use the naked (apex) domain name and use a prefix (www, 
 
 Shell into the image:
 
-        docker run -v myfolder:/izyhostdir -it --entrypoint sh hashicorp/terraform:latest 
+        docker run -v `pwd`:/izyhostdir -it --entrypoint sh hashicorp/terraform:latest 
         
 Once inside the image, do:
 
@@ -141,13 +158,11 @@ Make sure to invalidate the cloudfront distribution after the push
     
         izyaws.sh <VaultId> cloudfront create-invalidation --distribution-id $AWS_CLOUDFRONT_DISTRIBUTION_ID --paths "/*"
         
-## TerraForm quirks
+## Terraform Quirks
 * aws_cloudfront_distribution
     * when this is being created for the firsttime, you might get a "Missing required argument" error, followed by `The argument "origin.0.domain_name" is required, but no definition was found.`. rerunning the plan will address this.
     * viewer_certificate block for cloudfront will only accept certificates that are in us-east-1, regardless of your region.
 
-## AWS Quirks
-* Redirect apex domain to www using Route 53: You should create an S3 bucket, Properties > Static website hosting and setup Redirect requests. Once thats setup, you can add a record for A - IPv4 address. Select Yes for Alias, and enter the S3 bucket you created earlier.
 
 # Links
 [github]
@@ -156,6 +171,7 @@ Make sure to invalidate the cloudfront distribution after the push
 # ChangeLog
 
 ## V6.9
+* 6900003: add dockertools/serviceprobe
 * 6900002: add apps/static-website sample app with terraform 
 * 6900001: Codebuild - implement projectDetails
     * useful for exploring codebuild setup and viewing a build projects details in AWS CodeBuild
