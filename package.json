@@ -5,14 +5,16 @@
   "main": "index.js",
   "scripts": {
     "codebuild.check": "node node_modules/izy-proxy/cli.js callpretty codebuild?check",
-    "codebuild.projectDetails": "node node_modules/izy-proxy/cli.js callpretty codebuild?projectDetails"
+    "codebuild.projectDetails": "node node_modules/izy-proxy/cli.js callpretty codebuild?projectDetails",
+    "otp.generate": "node node_modules/izy-proxy/cli.js callpretty otp?generate"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/izyware/aws"
   },
   "dependencies": {
-    "izy-proxy": "latest"
+    "izy-proxy": "latest",
+    "otpauth": "^9.1.4"
   },
   "keywords": [
     "izyware",
