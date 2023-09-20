@@ -58,6 +58,12 @@ You can then set
 After you are done, be sure to unset the variables by
 
      unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN
+     
+If you need to generate a One Time Password from the cli use
+
+    npm run otp.generate queryObject.secretStrBase32 your_secret
+    npm run otp.generate queryObject.secretPath ~/.aws/otpsecret
+    npm run otp.generate queryObject.secretPath ~/googleAccount1/otpsecret
 
 # Debugging AWS Node SDK Network Traffic
 
@@ -189,6 +195,9 @@ If you have a stateful container (i.e. mysql), you should stop and delete its st
 
 
 # ChangeLog
+
+## V7.1
+* 7000001: add support for OTP generation
 
 ## V6.9
 * 6900005: add codebuild docker image
