@@ -120,10 +120,16 @@ To debug your code build scripts (buildspec.*) use the provided docker Image:
     
 You can then shell into the environment and run your commands:
 
-    docker run -v /var/run/docker.sock:/var/run/docker.sock -v `echo ~/.aws`:/root/.aws -v `pwd`:/izyhost/src -it --entrypoint sh izy-aws-codebuild:7.0 -c bash
+    docker run -e BUILD_DIR=`pwd` --env-file ~/docker_env-file.list -v /var/run/docker.sock:/var/run/docker.sock  -v `pwd`:/sourcedirectory -it --entrypoint sh izy-aws-codebuild:7.0 -c bash;
+    docker_shell>rsync -av /sourcedirectory/ ~/src;
+    docker_shell>killanddeletedata.sh image_keyword (i.e. sql)
     
-    
-If your application generates or uses docker containers as part of its CICD, you will need to use privilaged mode inside codebuild. Notice that the filesystem/volume mapping and network interfaces addresses can get confusing in this case. The most common issue reported on MacOS platforms vs Linux (Codebuild) is that the docker-compose volume mapping (using the volumes block) on Mac will only work if full path to host operating system is provided.
+Notice that if you dont have a env file or AWS credentials are not available as environment variables you share your .aws folder:
+
+    -v `echo ~/.aws`:/root/.aws
+
+
+If your application generates or uses docker containers as part of its CICD, you will need to use privilaged mode inside codebuild. Notice that the filesystem/volume mapping and network interfaces addresses can get confusing in this case. The most common issue reported on MacOS platforms vs Linux (Codebuild) is that the docker-compose volume mapping (using the volumes block) on Mac will only work if full path to host operating system is provided. Therefore, it is recommended to use the `BUILD_DIR` variable.
 
 You may use the dockertools/serviceprobe docker image to troubleshoot these issues. Refer to the Dockerfile for more information and examples about how to use the tool. Notice that if you are using dockercompose you can specifiy the following in the environment section:
 
@@ -197,6 +203,7 @@ If you have a stateful container (i.e. mysql), you should stop and delete its st
 # ChangeLog
 
 ## V7.1
+* 7000002: codebuild scripts bug fix and improvements
 * 7000001: add support for OTP generation
 
 ## V6.9
