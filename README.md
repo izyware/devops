@@ -64,6 +64,11 @@ If you need to generate a One Time Password from the cli use
     npm run otp.generate queryObject.secretStrBase32 your_secret
     npm run otp.generate queryObject.secretPath ~/.aws/otpsecret
     npm run otp.generate queryObject.secretPath ~/googleAccount1/otpsecret
+    
+To create an aws session automatically using the otp feature do
+
+    izy.aws "sts?newSession"
+
 
 # Debugging AWS Node SDK Network Traffic
 
@@ -203,6 +208,9 @@ If you have a stateful container (i.e. mysql), you should stop and delete its st
 # ChangeLog
 
 ## V7.1
+* 7100001: implement automatic sts session creation using the OTP feature
+
+## V7.0
 * 7000002: codebuild scripts bug fix and improvements
 * 7000001: add support for OTP generation
 

@@ -8,6 +8,9 @@
     "codebuild.projectDetails": "node node_modules/izy-proxy/cli.js callpretty codebuild?projectDetails",
     "otp.generate": "node node_modules/izy-proxy/cli.js callpretty otp?generate"
   },
+  "bin": {
+    "izy.aws": "bin/izy.js"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/izyware/aws"
