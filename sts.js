@@ -12,7 +12,6 @@ module.exports = (function() {
       chain => {
         let { serialNumber, tokenCode, accessKeyAndSecret } = chain.get('outcome').data;
         serialNumber = serialNumber.replace('\n', '');
-        console.log({ serialNumber, tokenCode, accessKeyAndSecret });
         require('fs').writeFileSync(`${require('os').homedir()}/.aws/credentials`, accessKeyAndSecret);
         let cmd = `${awsCli} sts get-session-token --serial-number ${serialNumber} --token-code ${tokenCode}`;
         console.log(cmd);
