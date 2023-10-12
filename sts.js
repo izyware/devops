@@ -14,19 +14,31 @@ module.exports = (function() {
         serialNumber = serialNumber.replace('\n', '');
         require('fs').writeFileSync(`${require('os').homedir()}/.aws/credentials`, accessKeyAndSecret);
         let cmd = `${awsCli} sts get-session-token --serial-number ${serialNumber} --token-code ${tokenCode}`;
-        console.log(cmd);
+        // delete environment variables in case they are invalid
+        delete process.env.AWS_ACCESS_KEY_ID;
+        delete process.env.AWS_SECRET_ACCESS_KEY;
+        delete process.env.AWS_SESSION_TOKEN;
         chain(['//inline/lib/shell?exec', {
           cmd, format: 'json'
         }]);
       },
       chain => {
         const { Credentials } = chain.get('outcome').data;
+        const map = {
+          AWS_ACCESS_KEY_ID: Credentials.AccessKeyId,
+          AWS_SECRET_ACCESS_KEY: Credentials.SecretAccessKey,
+          AWS_SESSION_TOKEN: Credentials.SessionToken
+        };
+        // POSIX uses \n, Windows uses \r\n
+        const { EOL } = require('os');
         let credentials = `[default]`;
-        credentials += `\r\naws_access_key_id = ${Credentials.AccessKeyId}`;
-        credentials += `\r\naws_secret_access_key = ${Credentials.SecretAccessKey}`;
-        credentials += `\r\naws_session_token = ${Credentials.SessionToken}`;
+        let envCmd = '';
+        for(let p in map) {
+          credentials += `${EOL}${p.toLowerCase().replace(/_/g, '_')}=${map[p]}`;
+          envCmd += `export ${p}=${map[p]};${EOL}`;
+        }
         require('fs').writeFileSync(`${require('os').homedir()}/.aws/credentials`, credentials);
-        chain(['outcome', { success: true, data: `AWS session created and is valid until ${Credentials.Expiration}` }]);
+        chain(['outcome', { success: true, data: envCmd }]);
       }
     ]);
   }

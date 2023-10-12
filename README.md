@@ -112,7 +112,7 @@ Use the following tools and processes to workaround the issues from aws.
 ## Codebuild
 You can check the latest build status and logs by:
 
-    npm run codebuild.check queryObject.izyUser 86 queryObject.showLogs true queryObject.projectName myProject
+    izy.aws "codebuild?check" queryObject.izyUser 86 queryObject.showLogs true queryObject.projectName myProject
     
 Exploring codebuild setup and viewing a build projects details
     
@@ -208,6 +208,8 @@ If you have a stateful container (i.e. mysql), you should stop and delete its st
 # ChangeLog
 
 ## V7.1
+* 7100002: clean environment variables for sts session before calling aws cli
+    * if set incorrectly aws cli will fail
 * 7100001: implement automatic sts session creation using the OTP feature
 
 ## V7.0
