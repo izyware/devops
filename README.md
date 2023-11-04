@@ -208,6 +208,7 @@ If you have a stateful container (i.e. mysql), you should stop and delete its st
 # ChangeLog
 
 ## V7.1
+* 7100003: rename from izy-aws to izy-devops
 * 7100002: clean environment variables for sts session before calling aws cli
     * if set incorrectly aws cli will fail
 * 7100001: implement automatic sts session creation using the OTP feature
@@ -230,4 +231,4 @@ If you have a stateful container (i.e. mysql), you should stop and delete its st
 * 6800002: Codebuild migration
 * 6800001: initial migration
 
-[github]: https://github.com/izyware/aws
+[github]: https://github.com/izyware/devops

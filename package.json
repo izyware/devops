@@ -1,7 +1,7 @@
 {
-  "name": "izyware-aws",
+  "name": "izyware-devops",
   "version": "1.0.8",
-  "description": "IzyWare AWS Package",
+  "description": "IzyWare Devops Package",
   "main": "index.js",
   "scripts": {
     "codebuild.check": "node node_modules/izy-proxy/cli.js callpretty codebuild?check",
@@ -9,11 +9,11 @@
     "otp.generate": "node node_modules/izy-proxy/cli.js callpretty otp?generate"
   },
   "bin": {
-    "izy.aws": "bin/izy.js"
+    "izy.devops": "bin/izy.js"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/izyware/aws"
+    "url": "https://github.com/izyware/devops"
   },
   "dependencies": {
     "izy-proxy": "latest",
@@ -21,7 +21,10 @@
   },
   "keywords": [
     "izyware",
-    "aws"
+    "devops",
+    "aws",
+    "terraform",
+    "otp"
   ],
   "author": "Izyware Inc",
   "license": "MIT"
