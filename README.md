@@ -93,7 +93,17 @@ You can use the following snippet inside `aws-sdk/lib/http/node.js`.
       });
       return ;
       
-# Working with SSH to access containers
+# Working with SSH and RSYNC to access containers
+You can access the ssh scripts by the ssh prefix:
+
+    izy.devops "ssh?shell" MACHINE_ID
+    izy.devops "ssh?runx.sh" . "xeyes"
+    
+    izy.devops "rsync?download" . "~/Downloads/" ~/izyware/izy-idman-tools/id/x/Desktop/Downloads/
+    izy.devops "rsync?upload" . "~/Downloads/" ~/izyware/izy-idman-tools/id/x/Desktop/Downloads/
+
+
+## pem file permissions
 You may get the following error when trying to SSH into the EC2 instance:
 
     @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -208,6 +218,7 @@ If you have a stateful container (i.e. mysql), you should stop and delete its st
 # ChangeLog
 
 ## V7.1
+* 7100004: add the ssh and rsync scripts
 * 7100003: rename from izy-aws to izy-devops
 * 7100002: clean environment variables for sts session before calling aws cli
     * if set incorrectly aws cli will fail
