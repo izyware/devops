@@ -1,3 +1,4 @@
+#!/bin/bash
 BASEDIR=$1
 REMOTEPATH=$2
 LOCALPATH=$3
