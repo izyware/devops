@@ -101,6 +101,7 @@ You can access the ssh scripts by the ssh prefix:
     
     izy.devops "rsync?download" . "~/Downloads/" ~/izyware/izy-idman-tools/id/x/Desktop/Downloads/
     izy.devops "rsync?upload" . "~/Downloads/" ~/izyware/izy-idman-tools/id/x/Desktop/Downloads/
+    izy.devops "rsync?nodesync" ~/plat/p/servers/_machine_ "~/codepath" appname
 
 
 ## pem file permissions
@@ -218,6 +219,7 @@ If you have a stateful container (i.e. mysql), you should stop and delete its st
 # ChangeLog
 
 ## V7.1
+* 7100005: implement nodesync functionality
 * 7100004: add the ssh and rsync scripts
 * 7100003: rename from izy-aws to izy-devops
 * 7100002: clean environment variables for sts session before calling aws cli

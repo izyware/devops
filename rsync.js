@@ -3,6 +3,7 @@ module.exports = (function() {
   const modtask = () => {};
   modtask.upload = async () => modtask.runSHScript('upload.sh');
   modtask.download = async () => modtask.runSHScript('download.sh');
+  modtask.nodesync = async () => modtask.runSHScript('nodesync.sh');
 
   modtask.runSHScript = fileName => {
     const path = `${__dirname}/rsync/${fileName}`;
