@@ -148,12 +148,23 @@ Notice that if you dont have a env file or AWS credentials are not available as 
 
 If your application generates or uses docker containers as part of its CICD, you will need to use privilaged mode inside codebuild. Notice that the filesystem/volume mapping and network interfaces addresses can get confusing in this case. The most common issue reported on MacOS platforms vs Linux (Codebuild) is that the docker-compose volume mapping (using the volumes block) on Mac will only work if full path to host operating system is provided. Therefore, it is recommended to use the `BUILD_DIR` variable. The other common issue reported for MacOS is that passing environment variables with newline from MacOS to the container environment will endup converting the newlines to "\n" string which could be a problem. If your code relies on environment variables for file generation, you should take this into account and convert "\n" to new line (for example by using awk or sed).
 
+
+## Docker Tools
 You may use the dockertools/serviceprobe docker image to troubleshoot these issues. Refer to the Dockerfile for more information and examples about how to use the tool. Notice that if you are using dockercompose you can specifiy the following in the environment section:
 
 
     ENV CONTAINER_CONTEXT: Service Probe
     ENV SLEEP_SECONDS: 5
     ENV CMD_TO_RUN: /usr/bin/nc -vz localhost 3306
+    
+    
+You can launch dockerized browser instances using the following (this will use [docker-firefox] container image):
+
+    izy.devops "docker?firefox" .
+
+If you need to shell into the container to test networking, etc.
+
+    docker run -it --entrypoint sh --name=firefox -p 5800:5800 -v folder_mapping jlesage/firefox -c sh
 
 
 ## Route53
@@ -225,6 +236,7 @@ To build runtimes
 # ChangeLog
 
 ## V7.3
+* 73000020: add containerized firefox to dockertools
 * 73000019: add standard containerized izy-proxy runtimes to dockertools
 * 73000018: implement socks proxy via ssh
 
@@ -254,4 +266,5 @@ To build runtimes
 * 6800002: Codebuild migration
 * 6800001: initial migration
 
+[docker-firefox]: https://github.com/jlesage/docker-firefox
 [github]: https://github.com/izyware/devops
