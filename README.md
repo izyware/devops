@@ -97,7 +97,8 @@ You can use the following snippet inside `aws-sdk/lib/http/node.js`.
 You can access the ssh scripts by the ssh prefix:
 
     izy.devops "ssh?shell" MACHINE_ID
-    izy.devops "ssh?runx.sh" . "xeyes"
+    izy.devops "ssh?runx" . "xeyes"
+    izy.devops "ssh?socksproxy" MACHINE_ID
     
     izy.devops "rsync?download" . "~/Downloads/" ~/izyware/izy-idman-tools/id/x/Desktop/Downloads/
     izy.devops "rsync?upload" . "~/Downloads/" ~/izyware/izy-idman-tools/id/x/Desktop/Downloads/
@@ -145,7 +146,7 @@ Notice that if you dont have a env file or AWS credentials are not available as 
     -v `echo ~/.aws`:/root/.aws
 
 
-If your application generates or uses docker containers as part of its CICD, you will need to use privilaged mode inside codebuild. Notice that the filesystem/volume mapping and network interfaces addresses can get confusing in this case. The most common issue reported on MacOS platforms vs Linux (Codebuild) is that the docker-compose volume mapping (using the volumes block) on Mac will only work if full path to host operating system is provided. Therefore, it is recommended to use the `BUILD_DIR` variable.
+If your application generates or uses docker containers as part of its CICD, you will need to use privilaged mode inside codebuild. Notice that the filesystem/volume mapping and network interfaces addresses can get confusing in this case. The most common issue reported on MacOS platforms vs Linux (Codebuild) is that the docker-compose volume mapping (using the volumes block) on Mac will only work if full path to host operating system is provided. Therefore, it is recommended to use the `BUILD_DIR` variable. The other common issue reported for MacOS is that passing environment variables with newline from MacOS to the container environment will endup converting the newlines to "\n" string which could be a problem. If your code relies on environment variables for file generation, you should take this into account and convert "\n" to new line (for example by using awk or sed).
 
 You may use the dockertools/serviceprobe docker image to troubleshoot these issues. Refer to the Dockerfile for more information and examples about how to use the tool. Notice that if you are using dockercompose you can specifiy the following in the environment section:
 
@@ -217,6 +218,9 @@ If you have a stateful container (i.e. mysql), you should stop and delete its st
 
 
 # ChangeLog
+
+## V7.3
+* 73000018: implement socks proxy via ssh
 
 ## V7.1
 * 7100005: implement nodesync functionality

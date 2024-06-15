@@ -3,6 +3,7 @@ module.exports = (function() {
   const modtask = () => {};
   modtask.shell = async () => modtask.runSHScript('shell.sh');
   modtask.runx = async () => modtask.runSHScript('runx.sh');
+  modtask.socksproxy = async () => modtask.runSHScript('socksproxy.sh');
 
   modtask.runSHScript = fileName => {
     const path = `${__dirname}/ssh/${fileName}`;
