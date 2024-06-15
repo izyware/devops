@@ -61,9 +61,9 @@ After you are done, be sure to unset the variables by
      
 If you need to generate a One Time Password from the cli use
 
-    npm run otp.generate queryObject.secretStrBase32 your_secret
-    npm run otp.generate queryObject.secretPath ~/.aws/otpsecret
-    npm run otp.generate queryObject.secretPath ~/googleAccount1/otpsecret
+    izy.devops "otp?generate" queryObject.secretStrBase32 your_secret
+    izy.devops "otp?generate" queryObject.secretPath ~/.aws/otpsecret
+    izy.devops "otp?generate" queryObject.secretPath ~/googleAccount1/otpsecret
     
 To create an aws session automatically using the otp feature do
 
@@ -211,6 +211,11 @@ When running out of space, do
 If you have a stateful container (i.e. mysql), you should stop and delete its state by 
 
     killanddeletedata.sh grepStr (mysql)
+    
+To build runtimes
+
+    docker build -f dockertools/nodejs/Dockerfile -t izy-nodejs:16.0  .;
+    docker run -it --entrypoint sh izy-nodejs:16.0 -c bash;
 
 
 # Links
@@ -220,6 +225,7 @@ If you have a stateful container (i.e. mysql), you should stop and delete its st
 # ChangeLog
 
 ## V7.3
+* 73000019: add standard containerized izy-proxy runtimes to dockertools
 * 73000018: implement socks proxy via ssh
 
 ## V7.1
