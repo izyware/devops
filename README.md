@@ -1,3 +1,9 @@
+# Install
+To install the tools for global access to `izy.devops` command, use:
+
+    curl -o- https://raw.githubusercontent.com/izyware/devops/master/sh/install.sh | bash
+
+
 # Working with AWS CLI Profiles
 Most users have their machines setup so that they have have a an `~/.aws/config` file with different profiles:
 
@@ -117,6 +123,119 @@ To fix this chmod to
 
     chmod 400 private.pem
     
+    
+# Setting up VPN for your organization
+
+## Server Setup
+For the VPN server, we recomment using one of the standard AMIs that is maintainated and kept secure and up to date such as OpenVPN Access Server Community Image (AWS marketplaces OpenVPN Access Server-2-8-5). A t2.small with 8GB storage should be sufficient for all practical purposes. Pick the region that is geographically closest to your users.
+
+One you launch the EC2, you should ssh into the machine. You will be greeted by the automatic setup script. Choose the following configuration options:
+
+* default cypher algorithms (secp384r1)
+* port number for the Admin Web UI: 943 
+* TCP port number for the OpenVPN Daemon: 443
+* Do you wish to login to the Admin UI as "openvpn"? Yes
+* Should client traffic be routed by default through the VPN? Yes  default [no]
+* Should client DNS traffic be routed by default through the VPN? Yes  default [no]
+* Should private subnets be accessible to clients by default? yes
+* You will also create a (username, password) pair for clients: if you need to update the password use:
+
+        sudo passwd username
+        
+
+If you need to make futher changes to the server such as setting up SSO, etc. it can be configured by accessing its Admin Web UI using your Web browser.
+
+
+## Client Setup
+Access the Client UI at https://SERVER_IP:943/ using the credential created above and download the `client.ovpn` file. Also place the (username, password) pair in the `auth-user-pass.txt`.
+
+You can copy the files to your destination client machine by doing
+
+
+    izy.devops "rsync?upload" . "PATH/servers/vpn-server_id/" client_machine_path/servers/vpn-server_id
+    
+Note that the client will need sudo to get on the vpn. Use the following command:   running
+                    
+    echo SUDO_PASSWORD | sudo -S openvpn --config client_machine_path/servers/vpn-server_id/client.ovpn --auth-user-pass client_machine_path/servers/vpn-server_id/auth-user-pass.txt &
+    
+    
+
+## Using the openVPN Client in the IzyShell docker container
+The openvpn client uses the dev/net/tun device. With docker > 1.2 you should use use:
+    
+    --cap-add=NET_ADMIN
+    --device /dev/net/tun 
+    
+If you are using an earlier version, you'll have to run it in privileged mode. 
+
+To make sure that the DNS will always work, you should make sure that your DNS server is routed through the eth0 interface. For this reason always use the utilities provided in the ~/vpn folder:
+
+    ~/vpn_connect.sh connectionfile.ovpn
+    OR
+    ~/vpn_connect_socks.sh connectionfile.ovpn
+    
+    ~/vpn_disconnect.sh
+    
+    
+The VPN server will be sending commands to setup the tun interface devices. You should check the client output for:
+
+    /sbin/ifconfig utun...
+    
+Then on the container check the routing config and the utun devices:
+
+    ifconfig
+    netstat -rn
+    
+and make sure that the tun interface is recieving traffic.
+
+Then try connecting to a known IP address without using the DNS:
+
+    nc -v myservice_ip myservice_port
+    
+The test the DNS, 
+
+    cat /etc/resolv.conf 
+    host izyware.com
+    
+## Tunneling the VPN via SOCKS
+OpenVPN support tunneling the openVPN Client via SOCKS. OpenVPN expects a a SOCKS5 server. Notice that openSSH implementation of SOCKS5 does not support UDP and trying to connect to openSSH will result in:
+
+    debug1: Connection to port __LOCALPORT__ forwarding to socks port 0 requested.
+    debug2: fd 6 setting TCP_NODELAY
+    debug2: fd 6 setting O_NONBLOCK
+    debug3: fd 6 is O_NONBLOCK
+    debug1: channel 2: new [dynamic-tcpip]
+    debug2: channel 2: pre_dynamic: have 0
+    debug2: channel 2: pre_dynamic: have 3
+    debug2: channel 2: decode socks5
+    debug2: channel 2: socks5 auth done
+    debug2: channel 2: pre_dynamic: need more
+    debug2: channel 2: pre_dynamic: have 0
+    debug2: channel 2: pre_dynamic: have 10
+    debug2: channel 2: decode socks5
+    debug2: channel 2: socks5 post auth
+    debug2: channel 2: only socks5 connect supported
+    
+However, successful connections would have resulted in ()
+
+    debug2: channel 8: dynamic request: socks5 host __IP__ port 443 command 1
+    
+The reason is openSSH does not support "UDP ASSOCIATE" (only "SSH_SOCKS5_CONNECT"). See rfc1928 for more details.
+
+To address this issue, either use protoco TCP (you would need to do the same for using http proxy because proxying is only supported for the TCP protocol). i.e. to have TCP enabled for your openVPN server:
+
+    /etc/openvpn/server.conf
+    /var/log/syslog
+    service openvpn status
+    service openvpn restart
+    
+As an alternative, you may use vendors that are SOCKS5 compliant. We recommend [dante]:
+
+    git clone https://github.com/wernight/docker-dante
+    sudo docker build --rm -t izyidman_dante .
+    
+    sudo docker run -d -p 1080:1080 izyidman_dante
+
 
 # AWS Quirks
 Use the following tools and processes to workaround the issues from aws.
@@ -236,6 +355,7 @@ To build runtimes
 # ChangeLog
 
 ## V7.3
+* 73000021: implement install script
 * 73000020: add containerized firefox to dockertools
 * 73000019: add standard containerized izy-proxy runtimes to dockertools
 * 73000018: implement socks proxy via ssh
@@ -266,5 +386,6 @@ To build runtimes
 * 6800002: Codebuild migration
 * 6800001: initial migration
 
+[dante]: https://github.com/wernight/docker-dante
 [docker-firefox]: https://github.com/jlesage/docker-firefox
 [github]: https://github.com/izyware/devops
