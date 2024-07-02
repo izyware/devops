@@ -277,9 +277,16 @@ You may use the dockertools/serviceprobe docker image to troubleshoot these issu
     ENV CMD_TO_RUN: /usr/bin/nc -vz localhost 3306
     
     
-You can launch dockerized browser instances using the following (this will use [docker-firefox] container image):
+You can launch dockerized browser instances using the following options:
 
-    izy.devops "docker?firefox" .
+* use [docker-firefox] container image:
+
+        izy.devops "docker?firefox" .
+        
+* use [docker-chrome] container image:
+
+        izy.devops "docker?chrome" .
+
 
 If you need to shell into the container to test networking, etc.
 
@@ -355,6 +362,8 @@ To build runtimes
 # ChangeLog
 
 ## V7.3
+* 73000023: add containerized chrome to dockertools
+* 73000022: implement help command. update README
 * 73000021: implement install script
 * 73000020: add containerized firefox to dockertools
 * 73000019: add standard containerized izy-proxy runtimes to dockertools
@@ -388,4 +397,5 @@ To build runtimes
 
 [dante]: https://github.com/wernight/docker-dante
 [docker-firefox]: https://github.com/jlesage/docker-firefox
+[docker-chrome]: https://github.com/kasmtech/workspaces-images
 [github]: https://github.com/izyware/devops
