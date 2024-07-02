@@ -1,0 +1,21 @@
+{
+  "browser_action": {
+    "browser_style": true,
+    "default_title": "Device Switch Utility",
+    "default_popup": "default_popup.html",
+    "default_icon": {
+      "19": "icons/default19.png",
+      "38": "icons/default38.png"
+    }
+  },
+  "description": "Device Switch Utility.",
+  "icons": {
+    "48": "icons/cookie.png",
+    "96": "icons/cookie@2x.png"
+  },
+  "homepage_url": "https://github.com/izyware/",
+  "manifest_version": 2,
+  "name": "Device Switch Utility",
+  "version": "1.0",
+  "permissions": ["cookies","<all_urls>","tabs"]
+}

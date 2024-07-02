@@ -362,6 +362,8 @@ To build runtimes
 # ChangeLog
 
 ## V7.3
+* 73000024: implement device switch firefox web extension
+    * access from about:debugging > This Firefox > Load Temporary Add on .. > /browserdir
 * 73000023: add containerized chrome to dockertools
 * 73000022: implement help command. update README
 * 73000021: implement install script
