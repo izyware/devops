@@ -3,7 +3,7 @@
 echo installing ...
 mkdir ~/izyware;
 cd ~/izyware;
-git clone git@github.com:izyware/devops.git;
+git clone https://github.com/izyware/devops.git;
 cd devops;
 npm install;
 npm link;
