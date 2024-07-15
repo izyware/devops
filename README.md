@@ -106,11 +106,28 @@ You can access the ssh scripts by the ssh prefix:
     izy.devops "ssh?runx" . "xeyes"
     izy.devops "ssh?socksproxy" MACHINE_ID
     
+    [container] izy.devops "ssh?publishssh" $HOME/vpn 8022
+    [vpn] izy.devops "ssh?localforward" .
+    [local] izy.devops "ssh?socksproxy" . remote
+    
+    
     izy.devops "rsync?download" . "~/Downloads/" ~/izyware/izy-idman-tools/id/x/Desktop/Downloads/
     izy.devops "rsync?upload" . "~/Downloads/" ~/izyware/izy-idman-tools/id/x/Desktop/Downloads/
     izy.devops "rsync?nodesync" ~/plat/p/servers/_machine_ "~/codepath" appname
 
 
+If your containers dont have key-pair setup, create the key-pair and push to the remote server:
+
+    cd CONTAINER_DIR;
+    ssh-keygen -f ./id_rsa
+    chmod 400 id_rsa*
+    mv id_rsa* config   
+    ssh-copy-id -i ./config/id_rsa.pub user@server
+    
+Then test it with
+
+    izy.devops "ssh?shell . 
+    
 ## pem file permissions
 You may get the following error when trying to SSH into the EC2 instance:
 
@@ -279,13 +296,16 @@ You may use the dockertools/serviceprobe docker image to troubleshoot these issu
     
 You can launch dockerized browser instances using the following options:
 
-* use [docker-firefox] container image:
+use [docker-firefox] container image:
 
-        izy.devops "docker?firefox" .
+    izy.devops "docker?firefox" .
         
-* use [docker-chrome] container image:
+        
+Some users have reported issues for pages accessing the clipboard. Make sure to do about:config > clipboard and set all the flags to true.
+        
+use [docker-chrome] container image:
 
-        izy.devops "docker?chrome" .
+    izy.devops "docker?chrome" .
 
 
 If you need to shell into the container to test networking, etc.
@@ -362,6 +382,8 @@ To build runtimes
 # ChangeLog
 
 ## V7.3
+* 73000026: implement portforwarding and remote ssh access and add support for non standard ssh service port 22
+* 73000025: update help message
 * 73000024: implement device switch firefox web extension
     * access from about:debugging > This Firefox > Load Temporary Add on .. > /browserdir
 * 73000023: add containerized chrome to dockertools
