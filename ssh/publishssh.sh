@@ -9,4 +9,4 @@ if [ ! -z "${OPTIONS}" ]; then
 fi
 echo service $LOCAL_PORT pushed as $REMOTE_PORT
 # -f will run in background
-ssh -i $BASEDIR/config/id_rsa -v -fN -R $REMOTE_PORT:localhost:$LOCAL_PORT $SSHPORT $SSHUSERNAME_AT_MACHINE
+ssh -i $BASEDIR/config/id_rsa -v -N -o ServerAliveInterval=60 -R $REMOTE_PORT:localhost:$LOCAL_PORT $SSHPORT $SSHUSERNAME_AT_MACHINE

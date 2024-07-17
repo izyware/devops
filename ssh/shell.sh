@@ -1,4 +1,3 @@
-#!/bin/bash
 BASEDIR=$1
 CMD=$2
 SCRIPTDIR=$(dirname "$0")

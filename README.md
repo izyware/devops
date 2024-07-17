@@ -382,6 +382,7 @@ To build runtimes
 # ChangeLog
 
 ## V7.3
+* 73000027: add explicit ServerAliveInterval for client
 * 73000026: implement portforwarding and remote ssh access and add support for non standard ssh service port 22
 * 73000025: update help message
 * 73000024: implement device switch firefox web extension
