@@ -1,4 +1,3 @@
-#!/bin/bash
 SCRIPTNAME=upload
 BASEDIR=$1
 LOCALPATH=$2

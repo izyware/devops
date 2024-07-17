@@ -382,6 +382,8 @@ To build runtimes
 # ChangeLog
 
 ## V7.3
+* 73000028: implement SSH_OPTIONS_CLI for controlling StrictHostKeyChecking
+    * useful for headless and automation environments
 * 73000027: add explicit ServerAliveInterval for client
 * 73000026: implement portforwarding and remote ssh access and add support for non standard ssh service port 22
 * 73000025: update help message
