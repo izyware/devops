@@ -10,6 +10,6 @@ mv devops-master devops;
 rm master.zip;
 cd devops;
 npm install;
-npm link;
+sudo npm link;
 echo izy.devops installed
 } # this ensures the entire script is downloaded #

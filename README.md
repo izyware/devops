@@ -386,6 +386,8 @@ To build runtimes
 # ChangeLog
 
 ## V7.4
+* 74000003: fix install script and use sudo npm link
+    * customers reported EACCES: permission denied on Ubuntu
 * 74000002: remove git dependency from install script
 * 74000001: implement openvpn?connect tool
 
