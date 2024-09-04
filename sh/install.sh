@@ -3,7 +3,11 @@
 echo installing ...
 mkdir ~/izyware;
 cd ~/izyware;
-git clone https://github.com/izyware/devops.git;
+rm master.zip;
+curl -LO https://github.com/izyware/devops/archive/refs/heads/master.zip;
+unzip master.zip;
+mv devops-master devops;
+rm master.zip;
 cd devops;
 npm install;
 npm link;

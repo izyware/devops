@@ -386,6 +386,7 @@ To build runtimes
 # ChangeLog
 
 ## V7.4
+* 74000002: remove git dependency from install script
 * 74000001: implement openvpn?connect tool
 
 ## V7.3
