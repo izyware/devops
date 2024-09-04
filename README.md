@@ -168,14 +168,13 @@ Access the Client UI at https://SERVER_IP:943/ using the credential created abov
 
 You can copy the files to your destination client machine by doing
 
-
     izy.devops "rsync?upload" . "PATH/servers/vpn-server_id/" client_machine_path/servers/vpn-server_id
     
-Note that the client will need sudo to get on the vpn. Use the following command:   running
-                    
-    echo SUDO_PASSWORD | sudo -S openvpn --config client_machine_path/servers/vpn-server_id/client.ovpn --auth-user-pass client_machine_path/servers/vpn-server_id/auth-user-pass.txt &
-    
-    
+Use the following command:
+                   
+    izy.devops "openvpn?connect" . SUDO_PASSWORD
+
+Note that the client will need sudo to get on the vpn. 
 
 ## Using the openVPN Client in the IzyShell docker container
 The openvpn client uses the dev/net/tun device. With docker > 1.2 you should use use:
@@ -300,8 +299,13 @@ use [docker-firefox] container image:
 
     izy.devops "docker?firefox" .
         
-        
-Some users have reported issues for pages accessing the clipboard. Make sure to do about:config > clipboard and set all the flags to true.
+The following are the recommended customization for maximum security and interoperability:
+* Some users have reported issues for pages accessing the clipboard. Make sure to do `about:config > clipboard` and set all the flags to true.
+* Some online services are sensitive to the user agent string and even when connecting from the same IP, when the user string is different they will detect it and may introduce issues. To override do `about:config > general.useragent.override`
+* Use a socks server `about:settings > socks`
+    * Also set `network.proxy.socks_remote_dns`, otherwise some DNS lookups may fail
+* Timezone is still broken. Notice that setting `privacy.resistFingerprinting` will not address the timezone issue and it will break the useragent customization.
+
         
 use [docker-chrome] container image:
 
@@ -380,6 +384,9 @@ To build runtimes
 
 
 # ChangeLog
+
+## V7.4
+* 74000001: implement openvpn?connect tool
 
 ## V7.3
 * 73000028: implement SSH_OPTIONS_CLI for controlling StrictHostKeyChecking
