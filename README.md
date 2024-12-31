@@ -213,6 +213,16 @@ The test the DNS,
     cat /etc/resolv.conf 
     host izyware.com
     
+## Offer a SOCKS server via the VPN interface 
+
+To get the IP address for the VPN network interface, do
+
+    VPN_SERVICE_IP=`ifconfig | grep 172 | awk -F'[: ]+' '{ print $3 }'`
+    
+Then use SSH 
+
+    ssh -v -o StrictHostKeyChecking=no -ND "*:19009" test@$VPN_SERVICE_IP
+    
 ## Tunneling the VPN via SOCKS
 OpenVPN support tunneling the openVPN Client via SOCKS. OpenVPN expects a a SOCKS5 server. Notice that openSSH implementation of SOCKS5 does not support UDP and trying to connect to openSSH will result in:
 
@@ -298,6 +308,16 @@ You can launch dockerized browser instances using the following options:
 use [docker-firefox] container image:
 
     izy.devops "docker?firefox" .
+    
+Note that `Desktop/firefox` subfolder will contain the `profile/storage/default` subfolder which can end-up with a large number of small files. This can be challenging for automated backup process of SOURCEINFORMATIONBUCKETID. As a workaround, you can store this in a diskimage.
+
+
+    hdiutil create -srcfolder ~/izyware/izy-idman-tools/id/$SOURCEINFORMATIONBUCKETID/Desktop/firefox -format UDSP -volname "firefox_data_dir_$SOURCEINFORMATIONBUCKETID" $HOME/izyware/izy-idman-tools/id/$SOURCEINFORMATIONBUCKETID/Desktop/firefox.sparseimage
+    
+    hdiutil mount $HOME/izyware/izy-idman-tools/id/$SOURCEINFORMATIONBUCKETID/Desktop/firefox.sparseimage
+        
+This will allow the docker environment to access the mounted folder inside at /Volumes/firefox_data_dir_$SOURCEINFORMATIONBUCKETID
+
         
 The following are the recommended customization for maximum security and interoperability:
 * Some users have reported issues for pages accessing the clipboard. Make sure to do `about:config > clipboard` and set all the flags to true.

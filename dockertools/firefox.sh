@@ -5,7 +5,7 @@ SCRIPTDIR=$(dirname "$0")
 source $SCRIPTDIR/../ssh/vars.sh
 NAME=firefox$SOURCEINFORMATIONBUCKETID
 WEBSERVERPORT=$((5800+$SOURCEINFORMATIONBUCKETID))
-DATADIR=$HOME/izyware/izy-idman-tools/id/$SOURCEINFORMATIONBUCKETID/Desktop/firefox;
+DATADIR=/Volumes/firefox_data_dir_$SOURCEINFORMATIONBUCKETID/firefox;
 BROWSERDIR=$SCRIPTDIR/../firefox;
 $SCRIPTDIR/killanddeletedata.sh $NAME
 docker run -d \
