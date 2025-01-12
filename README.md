@@ -106,7 +106,7 @@ You can access the ssh scripts by the ssh prefix:
     izy.devops "ssh?runx" . "xeyes"
     izy.devops "ssh?socksproxy" MACHINE_ID
     
-    [container] izy.devops "ssh?publishssh" $HOME/vpn 8022
+    [container] izy.devops "ssh?publishport" $HOME/vpn 8022
     [vpn] izy.devops "ssh?localforward" .
     [local] izy.devops "ssh?socksproxy" . remote
     
@@ -404,6 +404,10 @@ To build runtimes
 
 
 # ChangeLog
+
+## V7.5
+* 75000002: update script names
+* 75000001: move firefox shared folder to diskimage
 
 ## V7.4
 * 74000003: fix install script and use sudo npm link
