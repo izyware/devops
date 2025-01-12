@@ -406,6 +406,8 @@ To build runtimes
 # ChangeLog
 
 ## V7.5
+* 75000003: improve publishport functionality
+    * Add ExitOnForwardFailure to notify the service container to exit 
 * 75000002: update script names
 * 75000001: move firefox shared folder to diskimage
 

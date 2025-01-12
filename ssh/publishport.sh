@@ -1,12 +1,15 @@
 BASEDIR=$1
-OPTIONS=$2
+LOCAL_PORT=$2
+REMOTE_PORT=$3
 SCRIPTDIR=$(dirname "$0")
 source $SCRIPTDIR/../ssh/vars.sh
-REMOTE_PORT=$((22000+$SOURCEINFORMATIONBUCKETID))
-LOCAL_PORT=22
-if [ ! -z "${OPTIONS}" ]; then
-  LOCAL_PORT=$OPTIONS
+if [ -z "${LOCAL_PORT}" ]; then
+  LOCAL_PORT=22
 fi
-echo service $LOCAL_PORT pushed as $REMOTE_PORT
+if [ -z "${REMOTE_PORT}" ]; then
+  REMOTE_PORT=$((22000+$SOURCEINFORMATIONBUCKETID))
+fi
+echo port $LOCAL_PORT is being made available as $REMOTE_PORT
 # add -f to run in background. The current implementation will block until an error
-ssh -i $BASEDIR/config/id_rsa -v -N $SSH_OPTIONS_CLI -R $REMOTE_PORT:localhost:$LOCAL_PORT $SSHPORT $SSHUSERNAME_AT_MACHINE
+# add -v for verbose output
+ssh -i $BASEDIR/config/id_rsa -o ExitOnForwardFailure=yes -N $SSH_OPTIONS_CLI -R $REMOTE_PORT:localhost:$LOCAL_PORT $SSHPORT $SSHUSERNAME_AT_MACHINE

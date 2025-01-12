@@ -5,7 +5,7 @@ module.exports = (function() {
   modtask.runx = async () => modtask.runSHScript('runx.sh');
   modtask.socksproxy = async () => modtask.runSHScript('socksproxy.sh');
   modtask.localforward = async () => modtask.runSHScript('localforward.sh');
-  modtask.publishssh = async () => modtask.runSHScript('publishssh.sh');
+  modtask.publishport = async () => modtask.runSHScript('publishport.sh');
 
   modtask.runSHScript = fileName => {
     const path = `${__dirname}/ssh/${fileName}`;
