@@ -113,7 +113,8 @@ You can access the ssh scripts by the ssh prefix:
     
     izy.devops "rsync?download" . "~/Downloads/" ~/izyware/izy-idman-tools/id/x/Desktop/Downloads/
     izy.devops "rsync?upload" . "~/Downloads/" ~/izyware/izy-idman-tools/id/x/Desktop/Downloads/
-    izy.devops "rsync?nodesync" ~/plat/p/servers/_machine_ "~/codepath" appname
+    izy.devops "rsync?nodesync" ~/izyware/izy-idman-tools/id/_id_/host "~/codepath" appname appparam
+    
 
 
 If your containers dont have key-pair setup, create the key-pair and push to the remote server:
@@ -406,6 +407,8 @@ To build runtimes
 # ChangeLog
 
 ## V7.5
+* 75000004: enable interactive mode for shell spawns
+    * linux systems shells would error out on the source token without this feature
 * 75000003: improve publishport functionality
     * Add ExitOnForwardFailure to notify the service container to exit 
 * 75000002: update script names

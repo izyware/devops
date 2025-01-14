@@ -8,4 +8,4 @@ if [ "$OPTIONS" = "remote" ]; then
   SSHPORT="-p $((22000+$SOURCEINFORMATIONBUCKETID))"
 fi
 echo SOCKS proxy will be available on localhost:$PROXYPORT
-ssh -i $BASEDIR/config/id_rsa -v $SSH_OPTIONS_CLI -ND "*:$PROXYPORT" $SSHPORT $SSHUSERNAME_AT_MACHINE
+ssh -i $BASEDIR/config/id_rsa -o ExitOnForwardFailure=yes $SSH_OPTIONS_CLI -ND "*:$PROXYPORT" $SSHPORT $SSHUSERNAME_AT_MACHINE
