@@ -1,11 +1,11 @@
 SCRIPTNAME=service
 BASEDIR=$1
 CMD=$2
-SCRIPT_DIR=$(dirname $0)
+SCRIPTDIR=$(dirname $0)
 PORT=8082;
 source $SCRIPTDIR/../ssh/vars.sh
 
-TEMPLATE_FILE=$SCRIPT_DIR/rsyncd.conf
+TEMPLATE_FILE=$SCRIPTDIR/rsyncd.conf
 
 RSYNC_FOLDER=~/rsync;
 CONFIG_FILE=$RSYNC_FOLDER/rsyncd.conf
