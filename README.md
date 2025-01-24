@@ -99,7 +99,7 @@ You can use the following snippet inside `aws-sdk/lib/http/node.js`.
       });
       return ;
       
-# Working with SSH and RSYNC to access containers
+# Working with SSH to access containers
 You can access the ssh scripts by the ssh prefix:
 
     izy.devops "ssh?shell" MACHINE_ID
@@ -110,12 +110,6 @@ You can access the ssh scripts by the ssh prefix:
     [vpn] izy.devops "ssh?localforward" .
     [local] izy.devops "ssh?socksproxy" . remote
     
-    
-    izy.devops "rsync?download" . "~/Downloads/" ~/izyware/izy-idman-tools/id/x/Desktop/Downloads/
-    izy.devops "rsync?upload" . "~/Downloads/" ~/izyware/izy-idman-tools/id/x/Desktop/Downloads/
-    izy.devops "rsync?nodesync" ~/izyware/izy-idman-tools/id/_id_/host "~/codepath" appname appparam
-    
-
 
 If your containers dont have key-pair setup, create the key-pair and push to the remote server:
 
@@ -140,6 +134,18 @@ You may get the following error when trying to SSH into the EC2 instance:
 To fix this chmod to
 
     chmod 400 private.pem
+    
+# Working with RSYNC to move files around
+If you have SSH access to the containers use:
+
+    export CONTAINER_ID=~/izyware/izy-idman-tools/id/_id_/host;
+    izy.devops "rsync?download" $CONTAINER_ID "~/Downloads/" ~/izyware/izy-idman-tools/id/x/Desktop/Downloads/
+    izy.devops "rsync?upload" $CONTAINER_ID "~/Downloads/" ~/izyware/izy-idman-tools/id/x/Desktop/Downloads/
+    izy.devops "rsync?nodesync" $CONTAINER_ID "~/codepath" appname appparam
+    
+If SSH access is not available or you are in an environment where SSH access is not safe, you may start RSYNC as a service on the unsafe environment:
+
+    izy.devops "rsync?service" $CONTAINER_ID start|stop
     
     
 # Setting up VPN for your organization
@@ -407,6 +413,7 @@ To build runtimes
 # ChangeLog
 
 ## V7.5
+* 75000005: implement rsync service
 * 75000004: enable interactive mode for shell spawns
     * linux systems shells would error out on the source token without this feature
 * 75000003: improve publishport functionality

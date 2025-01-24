@@ -5,9 +5,32 @@ REMOTEPATH=$3
 SCRIPTDIR=$(dirname "$0")
 echo [$SCRIPTNAME] start
 source $SCRIPTDIR/../ssh/vars.sh
-REMOTEHOMEDIR=`ssh -i $BASEDIR/config/id_rsa $USERNAME@$MACHINEADDR pwd`;
+
+RSYNCPROCOTOL=ssh
+if [[ -f $BASEDIR/config/rsync ]]
+then
+    RSYNCPROCOTOL=rsync
+fi
+
+if [[ $RSYNCPROCOTOL == "ssh" ]]; then
+  REMOTEHOMEDIR=`ssh -i $BASEDIR/config/id_rsa $USERNAME@$MACHINEADDR pwd`;
+fi
+
+if [[ $RSYNCPROCOTOL == "rsync" ]]; then
+  REMOTEHOMEDIR=/HOME
+fi
+
+COMMON_FLAGS=-vazP
 LOCALHOMEDIR=`echo $HOME`;
 REMOTEDIR="${REMOTEPATH/"~"/$REMOTEHOMEDIR}"
 LOCALDIR="${LOCALPATH/"~"/$LOCALHOMEDIR}"
-echo [$SCRIPTNAME] rsync local:$LOCALDIR to remote:$REMOTEDIR
-rsync -av -e "ssh -i $BASEDIR/config/id_rsa $SSHPORT" $LOCALDIR $SSHUSERNAME_AT_MACHINE:$REMOTEDIR
+echo [$SCRIPTNAME] rsync via $RSYNCPROCOTOL - local:$LOCALDIR to remote:$REMOTEDIR
+
+if [[ $RSYNCPROCOTOL == "ssh" ]]; then
+  rsync $COMMON_FLAGS -e "ssh -i $BASEDIR/config/id_rsa $SSHPORT" $LOCALDIR $SSHUSERNAME_AT_MACHINE:$REMOTEDIR
+fi
+
+if [[ $RSYNCPROCOTOL == "rsync" ]]; then
+  rsync $COMMON_FLAGS $LOCALDIR rsync://@$MACHINEADDR:8082$REMOTEDIR
+fi
+
