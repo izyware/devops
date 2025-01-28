@@ -135,13 +135,15 @@ To fix this chmod to
 
     chmod 400 private.pem
     
-# Working with RSYNC to move files around
+# Working with RSYNC to copy and move files around
 If you have SSH access to the containers use:
 
     export CONTAINER_ID=~/izyware/izy-idman-tools/id/_id_/host;
     izy.devops "rsync?download" $CONTAINER_ID "~/Downloads/" ~/izyware/izy-idman-tools/id/x/Desktop/Downloads/
     izy.devops "rsync?upload" $CONTAINER_ID "~/Downloads/" ~/izyware/izy-idman-tools/id/x/Desktop/Downloads/
     izy.devops "rsync?nodesync" $CONTAINER_ID "~/codepath" appname appparam
+    
+If you prefer to move the files, use the `--remove-source-files` flag at the end.
     
 If SSH access is not available or you are in an environment where SSH access is not safe, you may start RSYNC as a service on the unsafe environment:
 
@@ -413,6 +415,8 @@ To build runtimes
 # ChangeLog
 
 ## V7.5
+* 75000006: add ability to pass additional parameters to rsync 
+    * to move files use --remove-source-files
 * 75000005: implement rsync service
 * 75000004: enable interactive mode for shell spawns
     * linux systems shells would error out on the source token without this feature
