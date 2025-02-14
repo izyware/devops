@@ -5,6 +5,7 @@ module.exports = (function() {
   modtask.upload = async () => modtask.runSHScript('upload.sh');
   modtask.download = async () => modtask.runSHScript('download.sh');
   modtask.nodesync = async () => modtask.runSHScript('nodesync.sh');
+  modtask.consolidate = async () => modtask.runSHScript('consolidate.sh');
 
   modtask.runSHScript = fileName => {
     const path = `bash`;

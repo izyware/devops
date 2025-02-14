@@ -149,6 +149,10 @@ If SSH access is not available or you are in an environment where SSH access is 
 
     izy.devops "rsync?service" $CONTAINER_ID start|stop
     
+To consolidate all downstream container data for upstream utilization:
+
+    rsync?consolidate ID
+    
     
 # Setting up VPN for your organization
 
@@ -432,6 +436,7 @@ To build runtimes
 # ChangeLog
 
 ## V7.5
+* 75000008: implement rsync?consolidate
 * 75000007: implement clw cli
 * 75000006: add ability to pass additional parameters to rsync 
     * to move files use --remove-source-files
