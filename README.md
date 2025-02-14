@@ -313,15 +313,22 @@ The tool offers automatic handling of iteration through the use of the next-toke
 
     export $CLW_LOG_QUERY=yourfile.sh
     izy.devops "aws/clw?filter-log-events" $CLW_LOG_QUERY
+    izy.devops "aws/clw?fromJSONCache" queryObject.clwRawStorePath ~/clw-json/store
     
 The CLW_LOG_QUERY file will specify the parameters to the CLI.
 
     AWS_CLI_PARAMS=$(echo --profile izyware --region eu-central-2)
-    FILTER_PARAM=$(echo --filter-pattern "index.html" --start-time `date -j -f "%b %d %T %Z %Y" "Jan 01 00:00:00 GMT 2020" "+%s"`000) 
+    
+    # Use a specific time to search from 
+    FILTER_PARAM=$(echo --filter-pattern "index.html" --start-time `date -j -f "%b %d %T %Z %Y" "Jan 01 00:00:00 GMT 2020" "+%s"`000)
+    
+    # Search everything in the past 7 hours
+    FILTER_PARAM=$(echo --filter-pattern "index.html" --start-time `date -j -v -3H "+%s"`000) 
+    
     AWS_LOG_GROUP=/aws/path/to/group
-    AWS_LOG_STREAM=log-stream-name
     LIMIT=1000
     JSON_STORE_PATH=~/clw-json/store
+    
 
 
 ## Docker Tools

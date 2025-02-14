@@ -16,7 +16,7 @@ module.exports = (function() {
       const cursorFile=`${clwRawStorePath}/cursor.txt`;
       const fileExt = 'clw-response.json';
       let nextToken;
-      const COMMON_PARAMS=evalExpression('echo logs filter-log-events  --output json --limit $LIMIT --log-group-name $AWS_LOG_GROUP --log-stream-names $AWS_LOG_STREAM  $AWS_CLI_PARAMS');
+      const COMMON_PARAMS=evalExpression('echo logs filter-log-events  --output json --limit $LIMIT --log-group-name $AWS_LOG_GROUP $AWS_CLI_PARAMS');
       const FILTER_PARAM = evalExpression('echo $FILTER_PARAM');
       console.log(`[start] ${clwRawStorePath}`);
       while(true) {
@@ -32,11 +32,11 @@ module.exports = (function() {
           if (nextToken) cmd += `--next-token ${nextToken}`;
           cmd += ` > ${cursorFile}`;
           execSync(`${cmd}`); 
-          fromJSONCache({ clwRawStorePath, fileExt });
+          modtask.fromJSONCache({ clwRawStorePath, fileExt });
       }
   }
 
-  function fromJSONCache({ clwRawStorePath, fileExt, finalOutputTheme }) {
+  modtask.fromJSONCache = function({ clwRawStorePath, fileExt, finalOutputTheme }) {
       clwRawStorePath = clwRawStorePath.replace('~', process.env.HOME);
       let files = [];
       if (fs.statSync(clwRawStorePath).isDirectory()) {
@@ -80,7 +80,7 @@ module.exports = (function() {
       let json = JSON.parse(jsonStr);
       const rnd = Date.now();
       if (json.events.length) {
-          const clwQueryResponsePath = `${clwRawStorePath}/${json.events[0].logStreamName}-${rnd}.${fileExt}`;
+          const clwQueryResponsePath = `${clwRawStorePath}/${rnd}.${fileExt}`;
           fs.writeFileSync(clwQueryResponsePath, jsonStr);
       }
       return { success: true, data: { nextToken: json.nextToken } };
