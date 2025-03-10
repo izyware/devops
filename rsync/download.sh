@@ -7,7 +7,7 @@ SCRIPTDIR=$(dirname "$0")
 echo [$SCRIPTNAME] start
 source $SCRIPTDIR/../ssh/vars.sh
 
-COMMON_FLAGS=-vazP
+COMMON_FLAGS=-vuazP --exclude .DS_Store
 
 RSYNCPROCOTOL=ssh
 if [[ -f $BASEDIR/config/rsync ]]

@@ -443,6 +443,7 @@ To build runtimes
 # ChangeLog
 
 ## V7.5
+* 75000009: rsync - add exclusion list. only copy if source is newer
 * 75000008: implement rsync?consolidate
 * 75000007: implement clw cli
 * 75000006: add ability to pass additional parameters to rsync 
