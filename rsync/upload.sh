@@ -21,7 +21,7 @@ if [[ $RSYNCPROCOTOL == "rsync" ]]; then
   REMOTEHOMEDIR=/HOME
 fi
 
-COMMON_FLAGS=-vuazP --exclude .DS_Store
+COMMON_FLAGS="-vuazP --exclude .DS_Store"
 LOCALHOMEDIR=`echo $HOME`;
 REMOTEDIR="${REMOTEPATH/"~"/$REMOTEHOMEDIR}"
 LOCALDIR="${LOCALPATH/"~"/$LOCALHOMEDIR}"
