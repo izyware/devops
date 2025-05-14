@@ -6,6 +6,7 @@ cd ~/izyware;
 rm master.zip;
 curl -LO https://github.com/izyware/devops/archive/refs/heads/master.zip;
 unzip master.zip;
+rm -rf devops;
 mv devops-master devops;
 rm master.zip;
 cd devops;

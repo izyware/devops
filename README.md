@@ -462,6 +462,8 @@ To build runtimes
 # ChangeLog
 
 ## V7.5
+* 75000011: install.sh - replace existing installation
+    * fixes a bug where a pre-existing installation would prevent it from installing correctly
 * 75000010: terraform - update documentation for cloud tools
 * 75000009: rsync - add exclusion list. only copy if source is newer
 * 75000008: implement rsync?consolidate
