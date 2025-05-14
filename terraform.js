@@ -1,42 +1,54 @@
 /* izy-loadobject nodejs-require */
 module.exports = (function() {
   const modtask = () => {};
-  const fs = require('fs');
-  const encoding = 'utf8';
-  const pageSize = 100;
 
-  modtask.loadTerraformApiConfig = () => {
-    const credentials = JSON.parse(fs.readFileSync(`${process.env.HOME}/.terraform.d/credentials.tfrc.json`, encoding)).credentials;
-    const domain = Object.keys(credentials)[0];
-    const token = credentials[domain].token;
-    return { domain, token };
+  modtask.update = async queryObject => {
+    let { key, value } = queryObject;
+    const split = key.split('/');
+    workspaceFullname = key.substr(0, key.length - split[split.length - 1].length - 1);
+    key = split[split.length - 1];
+    let workspace = await modtask.getWorkspace(workspaceFullname);
+    let varObjects = (await modtask.apiCall(`/workspaces/${workspace.id}/vars`)).filter(v => v.attributes.key === key);
+    if (varObjects.length === 0) {
+      throw { reason: `Variable ${key} not found in workspace ${workspaceFullname}` };
+    }
+    let varObject = varObjects[0];
+    delete varObject.links;
+    ['relationships', 'links'].forEach(attr => delete varObject[attr]);
+    ['created-at', 'version-id'].forEach(attr => delete varObject.attributes[attr]);
+    return await modtask.apiCall(`/vars/${varObject.id}`, { data: varObject }, 'PATCH');
   }
 
-  modtask.apiCall = async (path, body, method) => {
-    const { domain, token } = modtask.loadTerraformApiConfig();
-    if (!method) method = 'GET';
-    const prefix = `https://${domain}/api/v2`;
-    let outcome = await modtask.newChainAsync([
-      ['net.httprequest', {
-        method,
-        url: `${prefix}${path}`,
-        responseType: 'json',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/vnd.api+json'
-        },
-        body: typeof(body) === 'object' ? JSON.stringify(body) : body
-      }]
-    ]);
-    if ([200, 201].indexOf(outcome.status) === -1) {
-      throw { reason: outcome.responseText };
+  modtask.run = async queryObject => {
+    let { workspaceFullname, message, runId } = queryObject;
+    if (!message) message = '';
+    let workspace = await modtask.getWorkspace(workspaceFullname);
+    let currentRun = null;
+    if (runId) {
+      currentRun = { id: runId };
+    } else {
+      currentRun = await modtask.apiCall(`/runs`, {
+        "data": {
+          "attributes": {
+            "message": message,
+            "is-destroy": false
+          },
+          "type": "runs",
+          "relationships": {
+            "workspace": {
+              "data": {
+                "id": workspace.id,
+                "type": "workspaces"
+              }
+            }
+          }
+        }
+      });
     }
-    let { data, links } = outcome.response;
-    if(links && links.next) {
-      const nextData = await modtask.apiCall(links.next.split(prefix)[1], body, method);
-      data = data.concat(nextData);
-    }
-    return data;
+    do {
+      currentRun = await modtask.apiCall(`/runs/${currentRun.id}`);
+      console.log(currentRun.attributes.status);
+    } while(['planned_and_finished', 'applied', 'errored'].indexOf(currentRun.attributes.status) === -1);
   }
 
   modtask.cp = async queryObject => {
@@ -45,18 +57,12 @@ module.exports = (function() {
     let org_name = null;
     let srcWorkspace = null;
     if (workspaceFullname) {
-      org_name = workspaceFullname.split('/')[0];
-      srcWorkspaceName = workspaceFullname.split('/')[1];
-      let matches = await modtask.apiCall(`/organizations/${org_name}/workspaces?page%5Bsize%5D=${pageSize}&search%5Bwildcard-name%5D=${srcWorkspaceName}`);
-      if (matches.length != 1) {
-        throw { reason: `Workspace ${srcWorkspaceName} not found in organization ${org_name} or it is not unique` };
-      }
-      srcWorkspace = matches[0];
-      srcWorkspaceId = srcWorkspace.id;
+      srcWorkspace = await modtask.getWorkspace(workspaceFullname);
     } else {
       srcWorkspace = await modtask.apiCall(`/workspaces/${srcWorkspaceId}`);
-      org_name = srcWorkspace.relationships.organization.data.id;
     }
+    srcWorkspaceId = srcWorkspace.id;
+    org_name = srcWorkspace.relationships.organization.data.id;
     srcWorkspace.vars = (await modtask.apiCall(`/workspaces/${srcWorkspaceId}/vars`)).map(v => {
       return {
         type: 'vars',
@@ -123,6 +129,54 @@ module.exports = (function() {
     }, 'PATCH'));
 
     return { success: true, data: newWorkspace };
+  }
+
+  const fs = require('fs');
+  const encoding = 'utf8';
+  const pageSize = 100;
+
+  modtask.loadTerraformApiConfig = () => {
+    const credentials = JSON.parse(fs.readFileSync(`${process.env.HOME}/.terraform.d/credentials.tfrc.json`, encoding)).credentials;
+    const domain = Object.keys(credentials)[0];
+    const token = credentials[domain].token;
+    return { domain, token };
+  }
+
+  modtask.apiCall = async (path, body, method) => {
+    const { domain, token } = modtask.loadTerraformApiConfig();
+    if (!method) method = body ? 'POST' : 'GET';
+    const prefix = `https://${domain}/api/v2`;
+    let outcome = await modtask.newChainAsync([
+      ['net.httprequest', {
+        method,
+        url: `${prefix}${path}`,
+        responseType: 'json',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/vnd.api+json'
+        },
+        body: typeof(body) === 'object' ? JSON.stringify(body) : body
+      }]
+    ]);
+    if ([200, 201].indexOf(outcome.status) === -1) {
+      throw { reason: outcome.responseText };
+    }
+    let { data, links } = outcome.response;
+    if(links && links.next) {
+      const nextData = await modtask.apiCall(links.next.split(prefix)[1], body, method);
+      data = data.concat(nextData);
+    }
+    return data;
+  }
+
+  modtask.getWorkspace = async (workspaceFullname) => {
+    let org_name = workspaceFullname.split('/')[0];
+    let workspaceName = workspaceFullname.split('/')[1];
+    let matches = await modtask.apiCall(`/organizations/${org_name}/workspaces?page%5Bsize%5D=${pageSize}&search%5Bwildcard-name%5D=${workspaceName}`);
+    if (matches.length != 1) {
+      throw { reason: `Workspace ${workspaceName} not found in organization ${org_name} or it is not unique` };
+    }
+    return matches[0];
   }
 
   return modtask;

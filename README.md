@@ -398,6 +398,12 @@ The destWorkspaceId parameter is optional. If it is not specified, a new workspa
 This operation relies on the credentials file located at `~/.terraform.d/credentials.tfrc.json`. Please ensure that your API token is correctly configured in this file before proceeding.
 
 
+Other common operations include:
+
+    izy.devops "terraform?update" queryObject.key organization/workspace-name/key queryObject.value value
+    izy.devops "terraform?run" queryObject.workspaceFullname organization/workspace-name queryObject.message message
+
+
 ## Infrastructure 
 We recommend using the Terraform docker image. We provide template apps in the apps folder. As an example, to quickly setup and deploy a static website for a domain follow these steps:
 
@@ -463,6 +469,7 @@ To build runtimes
 # ChangeLog
 
 ## V7.5
+* 75000013: terraform - update documentation and add run and update
 * 75000012: terraform - implement support for user friendly names
 * 75000011: install.sh - replace existing installation
     * fixes a bug where a pre-existing installation would prevent it from installing correctly
