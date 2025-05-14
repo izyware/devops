@@ -391,6 +391,7 @@ If you need to shell into the container to test networking, etc.
 To clone and copy entire workspaces—or selectively transfer components such as SSH keys, teams, and variables—please use the following command:
 
     izy.devops "terraform?cp" queryObject.srcWorkspaceId <sourceId> queryObject.destWorkspaceId <destinationId>
+    izy.devops "terraform?cp" queryObject.workspaceFullname organization/workspace-name queryObject.destWorkspaceId <destinationId>
     
 The destWorkspaceId parameter is optional. If it is not specified, a new workspace will be created automatically. When provided, the SSH keys, team configurations, and variables from the source workspace will be copied into the designated destination workspace.
 
@@ -462,6 +463,7 @@ To build runtimes
 # ChangeLog
 
 ## V7.5
+* 75000012: terraform - implement support for user friendly names
 * 75000011: install.sh - replace existing installation
     * fixes a bug where a pre-existing installation would prevent it from installing correctly
 * 75000010: terraform - update documentation for cloud tools

@@ -3,6 +3,7 @@ module.exports = (function() {
   const modtask = () => {};
   const fs = require('fs');
   const encoding = 'utf8';
+  const pageSize = 100;
 
   modtask.loadTerraformApiConfig = () => {
     const credentials = JSON.parse(fs.readFileSync(`${process.env.HOME}/.terraform.d/credentials.tfrc.json`, encoding)).credentials;
@@ -14,10 +15,11 @@ module.exports = (function() {
   modtask.apiCall = async (path, body, method) => {
     const { domain, token } = modtask.loadTerraformApiConfig();
     if (!method) method = 'GET';
+    const prefix = `https://${domain}/api/v2`;
     let outcome = await modtask.newChainAsync([
       ['net.httprequest', {
         method,
-        url: `https://${domain}/api/v2${path}`,
+        url: `${prefix}${path}`,
         responseType: 'json',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -29,18 +31,32 @@ module.exports = (function() {
     if ([200, 201].indexOf(outcome.status) === -1) {
       throw { reason: outcome.responseText };
     }
-    return outcome.response.data;
+    let { data, links } = outcome.response;
+    if(links && links.next) {
+      const nextData = await modtask.apiCall(links.next.split(prefix)[1], body, method);
+      data = data.concat(nextData);
+    }
+    return data;
   }
 
   modtask.cp = async queryObject => {
-    const { srcWorkspaceId, destWorkspaceId } = queryObject;
-    let srcWorkspace = await modtask.apiCall(`/workspaces/${srcWorkspaceId}`);
-    const org_name = srcWorkspace.relationships.organization.data.id;
-    srcWorkspace.sshKeys = (await modtask.apiCall(`/organizations/${org_name}/workspaces`)).map(v => {
-      if (!v.relationships['ssh-key']) return null;
-      if (v.id !== srcWorkspaceId) return null;
-      return v.relationships['ssh-key'].data;
-    }).filter(t => t !== null);
+    let { workspaceFullname, srcWorkspaceId, destWorkspaceId } = queryObject;
+
+    let org_name = null;
+    let srcWorkspace = null;
+    if (workspaceFullname) {
+      org_name = workspaceFullname.split('/')[0];
+      srcWorkspaceName = workspaceFullname.split('/')[1];
+      let matches = await modtask.apiCall(`/organizations/${org_name}/workspaces?page%5Bsize%5D=${pageSize}&search%5Bwildcard-name%5D=${srcWorkspaceName}`);
+      if (matches.length != 1) {
+        throw { reason: `Workspace ${srcWorkspaceName} not found in organization ${org_name} or it is not unique` };
+      }
+      srcWorkspace = matches[0];
+      srcWorkspaceId = srcWorkspace.id;
+    } else {
+      srcWorkspace = await modtask.apiCall(`/workspaces/${srcWorkspaceId}`);
+      org_name = srcWorkspace.relationships.organization.data.id;
+    }
     srcWorkspace.vars = (await modtask.apiCall(`/workspaces/${srcWorkspaceId}/vars`)).map(v => {
       return {
         type: 'vars',
@@ -87,12 +103,6 @@ module.exports = (function() {
       newWorkspace = { id: destWorkspaceId };
     }
 
-    newWorkspace.sshKeys = [];
-    for(let i = 0; i < srcWorkspace.sshKeys.length; i++) newWorkspace.sshKeys.push(await modtask.apiCall(
-      `/workspaces/${newWorkspace.id}/relationships/ssh-key`, {
-      data: srcWorkspace.sshKeys[i]
-    }, 'PATCH'));
-
     newWorkspace.teams = [];
     for(let i = 0; i < srcWorkspace.teams.length; i++) {
       srcWorkspace.teams[i].relationships.workspace.data.id = newWorkspace.id;
@@ -105,6 +115,12 @@ module.exports = (function() {
     for(let i = 0; i < srcWorkspace.vars.length; i++) newWorkspace.vars.push(await modtask.apiCall(`/workspaces/${newWorkspace.id}/vars`, {
       data: srcWorkspace.vars[i]
     }, 'POST'));
+
+    newWorkspace.sshKeys = [];
+    if (srcWorkspace.relationships['ssh-key']) newWorkspace.sshKeys.push(await modtask.apiCall(
+      `/workspaces/${newWorkspace.id}/relationships/ssh-key`, {
+      data: srcWorkspace.relationships['ssh-key'].data
+    }, 'PATCH'));
 
     return { success: true, data: newWorkspace };
   }
