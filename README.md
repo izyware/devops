@@ -149,6 +149,8 @@ If SSH access is not available or you are in an environment where SSH access is 
 
     izy.devops "rsync?service" $CONTAINER_ID start|stop
     
+Note: Make sure you are using the latest version of rsync on macOS by `brew install rsync`.
+    
 To consolidate all downstream container data for upstream utilization:
 
     rsync?consolidate ID
@@ -349,8 +351,13 @@ use [docker-firefox] container image:
 Note that `Desktop/firefox` subfolder will contain the `profile/storage/default` subfolder which can end-up with a large number of small files. This can be challenging for automated backup process of SOURCEINFORMATIONBUCKETID. As a workaround, you can store this in a diskimage.
 
 
+    # Either create an empty diskimage (If no source data is available)
+    hdiutil create -type SPARSE -volname "firefox_data_dir_$SOURCEINFORMATIONBUCKETID" $HOME/izyware/izy-idman-tools/id/$SOURCEINFORMATIONBUCKETID/Desktop/firefox.sparseimage
+
+    # OR create one from source data
     hdiutil create -srcfolder ~/izyware/izy-idman-tools/id/$SOURCEINFORMATIONBUCKETID/Desktop/firefox -format UDSP -volname "firefox_data_dir_$SOURCEINFORMATIONBUCKETID" $HOME/izyware/izy-idman-tools/id/$SOURCEINFORMATIONBUCKETID/Desktop/firefox.sparseimage
     
+    # Finally mount it
     hdiutil mount $HOME/izyware/izy-idman-tools/id/$SOURCEINFORMATIONBUCKETID/Desktop/firefox.sparseimage
         
 This will allow the docker environment to access the mounted folder inside at /Volumes/firefox_data_dir_$SOURCEINFORMATIONBUCKETID
@@ -379,6 +386,18 @@ If you need to shell into the container to test networking, etc.
 
 
 # Terraform 
+
+## Terraform Cloud Tools
+To clone and copy entire workspaces—or selectively transfer components such as SSH keys, teams, and variables—please use the following command:
+
+    izy.devops "terraform?cp" queryObject.srcWorkspaceId <sourceId> queryObject.destWorkspaceId <destinationId>
+    
+The destWorkspaceId parameter is optional. If it is not specified, a new workspace will be created automatically. When provided, the SSH keys, team configurations, and variables from the source workspace will be copied into the designated destination workspace.
+
+This operation relies on the credentials file located at `~/.terraform.d/credentials.tfrc.json`. Please ensure that your API token is correctly configured in this file before proceeding.
+
+
+## Infrastructure 
 We recommend using the Terraform docker image. We provide template apps in the apps folder. As an example, to quickly setup and deploy a static website for a domain follow these steps:
 
 
@@ -443,6 +462,7 @@ To build runtimes
 # ChangeLog
 
 ## V7.5
+* 75000010: terraform - update documentation for cloud tools
 * 75000009: rsync - add exclusion list. only copy if source is newer
 * 75000008: implement rsync?consolidate
 * 75000007: implement clw cli
