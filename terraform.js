@@ -13,20 +13,27 @@ module.exports = (function() {
       throw { reason: `Variable ${key} not found in workspace ${workspaceFullname}` };
     }
     let varObject = varObjects[0];
+    if (!value) {
+      return { success: true, data: varObject };
+    } else {
+      varObject.attributes.value = value;
+    }
     delete varObject.links;
     ['relationships', 'links'].forEach(attr => delete varObject[attr]);
     ['created-at', 'version-id'].forEach(attr => delete varObject.attributes[attr]);
-    return await modtask.apiCall(`/vars/${varObject.id}`, { data: varObject }, 'PATCH');
+    varObject = { data: varObject };
+    let result = await modtask.apiCall(`/vars/${varObject.data.id}`, varObject, 'PATCH');
+    return { success: true, data: result }; 
   }
 
   modtask.run = async queryObject => {
     let { workspaceFullname, message, runId } = queryObject;
     if (!message) message = '';
-    let workspace = await modtask.getWorkspace(workspaceFullname);
     let currentRun = null;
     if (runId) {
       currentRun = { id: runId };
     } else {
+      let workspace = await modtask.getWorkspace(workspaceFullname);
       currentRun = await modtask.apiCall(`/runs`, {
         "data": {
           "attributes": {
@@ -49,6 +56,7 @@ module.exports = (function() {
       currentRun = await modtask.apiCall(`/runs/${currentRun.id}`);
       console.log(currentRun.attributes.status);
     } while(['planned_and_finished', 'applied', 'errored'].indexOf(currentRun.attributes.status) === -1);
+    return { success: true, data: 'done' };
   }
 
   modtask.cp = async queryObject => {

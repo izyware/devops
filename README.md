@@ -400,7 +400,12 @@ This operation relies on the credentials file located at `~/.terraform.d/credent
 
 Other common operations include:
 
+    # to check the current state of a variable
+    izy.devops "terraform?update" queryObject.key organization/workspace-name/key
+
+    # to update its value
     izy.devops "terraform?update" queryObject.key organization/workspace-name/key queryObject.value value
+    
     izy.devops "terraform?run" queryObject.workspaceFullname organization/workspace-name queryObject.message message
 
 
@@ -469,6 +474,7 @@ To build runtimes
 # ChangeLog
 
 ## V7.5
+* 75000014: update README file
 * 75000013: terraform - update documentation and add run and update
 * 75000012: terraform - implement support for user friendly names
 * 75000011: install.sh - replace existing installation
