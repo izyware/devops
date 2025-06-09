@@ -314,6 +314,11 @@ CloudWatch log querying can present a significant challenge, often proving to be
 The tool offers automatic handling of iteration through the use of the next-token, eliminating the need for manual pagination. It also provides the ability to pause and later resume the filtering operation, ensuring flexibility and control over the process. Additionally, it allows for the storage of progress, enabling seamless monitoring of the operation’s advancement and facilitating better tracking and management throughout the process:
 
     export $CLW_LOG_QUERY=yourfile.sh
+    export $CLW_LOG_THEME=theme.js
+    izy.devops "aws/clw?filter-log-events" $CLW_LOG_QUERY $CLW_LOG_THEME
+
+This process will scan, filter, and print the output. Additionally, it will store the results in a JSON cache for future reference. For greater control, each step can be executed individually as separate commands.
+
     izy.devops "aws/clw?filter-log-events" $CLW_LOG_QUERY
     izy.devops "aws/clw?fromJSONCache" queryObject.clwRawStorePath ~/clw-json/store
     
@@ -474,6 +479,7 @@ To build runtimes
 # ChangeLog
 
 ## V7.5
+* 75000015: add support for log parsers and themes. 
 * 75000014: update README file
 * 75000013: terraform - update documentation and add run and update
 * 75000012: terraform - implement support for user friendly names
