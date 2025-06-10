@@ -308,33 +308,44 @@ Notice that if you dont have a env file or AWS credentials are not available as 
 
 If your application generates or uses docker containers as part of its CICD, you will need to use privilaged mode inside codebuild. Notice that the filesystem/volume mapping and network interfaces addresses can get confusing in this case. The most common issue reported on MacOS platforms vs Linux (Codebuild) is that the docker-compose volume mapping (using the volumes block) on Mac will only work if full path to host operating system is provided. Therefore, it is recommended to use the `BUILD_DIR` variable. The other common issue reported for MacOS is that passing environment variables with newline from MacOS to the container environment will endup converting the newlines to "\n" string which could be a problem. If your code relies on environment variables for file generation, you should take this into account and convert "\n" to new line (for example by using awk or sed).
 
+## ECS
+
+    export CONTAINER_ID=~/izyware/izy-idman-tools/id/_id_/host;
+    izy.devops "aws.ecs?executeCommand" $CONTAINER_ID "ls"
+    izy.devops "aws.ecs?info" $CONTAINER_ID
+
+The following variables are used from $CONTAINER_ID:
+
+    AWS_ECS_SERVICE_NAME=myservice
+    AWS_ECS_CLUSTER_ARN=arn:aws:ecs:xxxx
+
 ## CloudWatch 
 CloudWatch log querying can present a significant challenge, often proving to be both complex and time-consuming due to a variety of factors. The intricacies of working with large volumes of log data, coupled with the limitations of CloudWatch’s native query capabilities, can make the process of extracting meaningful insights both labor-intensive and inefficient. To streamline this task, it is highly recommended to leverage the CLW group of tools, which facilitates the seamless importation of logs into a JSON-based storage system. Once the logs are stored in this manner, they can then be efficiently aggregated and analyzed using the Izy-sync tools, thereby optimizing the querying process and improving overall data management efficiency. 
 
 The tool offers automatic handling of iteration through the use of the next-token, eliminating the need for manual pagination. It also provides the ability to pause and later resume the filtering operation, ensuring flexibility and control over the process. Additionally, it allows for the storage of progress, enabling seamless monitoring of the operation’s advancement and facilitating better tracking and management throughout the process:
 
-    export $CLW_LOG_QUERY=yourfile.sh
-    export $CLW_LOG_THEME=theme.js
-    izy.devops "aws/clw?filter-log-events" $CLW_LOG_QUERY $CLW_LOG_THEME
 
-This process will scan, filter, and print the output. Additionally, it will store the results in a JSON cache for future reference. For greater control, each step can be executed individually as separate commands.
+    export CONTAINER_ID=~/izyware/izy-idman-tools/id/_id_/host.sh;
+    izy.devops "aws/clw?filter-log-events" $CONTAINER_ID
 
-    izy.devops "aws/clw?filter-log-events" $CLW_LOG_QUERY
-    izy.devops "aws/clw?fromJSONCache" queryObject.clwRawStorePath ~/clw-json/store
+This process will scan, filter, and store the results in a JSON cache for future reference. Additionally, when AWS_LOGS_THEME is specified, it will print the output using the theme specified. For greater control, each step can be executed individually as separate commands by removing AWS_LOGS_THEME from CONTAINER_ID:
+
+    izy.devops "aws/clw?filter-log-events" $CONTAINER_ID
+    izy.devops "aws/clw?fromJSONCache" queryObject.clwRawStorePath ~/clw-json/store ...
     
-The CLW_LOG_QUERY file will specify the parameters to the CLI.
-
-    AWS_CLI_PARAMS=$(echo --profile izyware --region eu-central-2)
+The following variables are used from $CONTAINER_ID:
     
     # Use a specific time to search from 
     FILTER_PARAM=$(echo --filter-pattern "index.html" --start-time `date -j -f "%b %d %T %Z %Y" "Jan 01 00:00:00 GMT 2020" "+%s"`000)
     
     # Search everything in the past 7 hours
-    FILTER_PARAM=$(echo --filter-pattern "index.html" --start-time `date -j -v -3H "+%s"`000) 
-    
+    AWS_LOG_FILTER_PARAM=$(echo --filter-pattern "index.html" --start-time `date -j -v -3H "+%s"`000) 
+
     AWS_LOG_GROUP=/aws/path/to/group
-    LIMIT=1000
-    JSON_STORE_PATH=~/clw-json/store
+    AWS_LOG_LIMIT=1000
+    AWS_LOG_JSON_STORE_PATH=~/clw-json/store
+    # Optional
+    AWS_LOG_THEME=~/theme/prettyprint.js
     
 
 
@@ -479,6 +490,7 @@ To build runtimes
 # ChangeLog
 
 ## V7.5
+* 75000016: add support for aws ecs
 * 75000015: add support for log parsers and themes. 
 * 75000014: update README file
 * 75000013: terraform - update documentation and add run and update

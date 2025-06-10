@@ -8,17 +8,17 @@ module.exports = (function() {
     modtask['filter-log-events'] = async queryObject => {
         let i = 4;
         const configPath = process.argv[i++];
-        const themePath = process.argv[i++];
         const evalExpression = expression => execSync(`source ${configPath};${expression}`).toString().trim();
         const sessionToken = `${(new Date()).getTime()}${Math.random().toString(30).split('.')[1]}`;
-        const JSON_STORE_PATH = evalExpression('echo $JSON_STORE_PATH');
+        const JSON_STORE_PATH = evalExpression('echo $AWS_LOG_JSON_STORE_PATH');
+        const themePath = evalExpression('echo $AWS_LOG_THEME');
         const clwRawStorePath=`${JSON_STORE_PATH}/${sessionToken}`;
         execSync(`mkdir -p ${clwRawStorePath}`);
         const cursorFile=`${clwRawStorePath}/cursor.txt`;
         const fileExt = 'clw-response.json';
         let nextToken;
-        const COMMON_PARAMS=evalExpression('echo logs filter-log-events  --output json --limit $LIMIT --log-group-name $AWS_LOG_GROUP $AWS_CLI_PARAMS');
-        const FILTER_PARAM = evalExpression('echo $FILTER_PARAM');
+        const COMMON_PARAMS=evalExpression('echo logs filter-log-events  --output json --limit $AWS_LOG_LIMIT --log-group-name $AWS_LOG_GROUP $AWS_OPTIONS_CLI');
+        const FILTER_PARAM = evalExpression('echo $AWS_LOG_FILTER_PARAM');
         console.log(`[start] ${clwRawStorePath}`);
         while(true) {
             nextToken=null;
