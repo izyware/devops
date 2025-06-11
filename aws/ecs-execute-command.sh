@@ -19,6 +19,6 @@ echo "[$SCRIPTNAME] running command on $CONTAINER_NAME"
 aws ecs execute-command $AWS_OPTIONS_CLI \
   --cluster $AWS_ECS_CLUSTER_ARN \
   --task $TASK_ID \
-  --container $$CONTAINER_NAME \
+  --container $CONTAINER_NAME \
   --command $COMMAND \
   --interactive
