@@ -422,7 +422,7 @@ Other common operations include:
     # to update its value
     izy.devops "terraform?update" queryObject.key organization/workspace-name/key queryObject.value value
     
-    izy.devops "terraform?run" queryObject.workspaceFullname organization/workspace-name queryObject.message message
+    izy.devops "terraform?run" queryObject.workspaceFullname organization/workspace-name queryObject.message message queryObject.apply true
 
 
 ## Infrastructure 
@@ -490,6 +490,7 @@ To build runtimes
 # ChangeLog
 
 ## V7.5
+* 75000017: terraform - bug fixes 
 * 75000016: add support for aws ecs
 * 75000015: add support for log parsers and themes. 
 * 75000014: update README file

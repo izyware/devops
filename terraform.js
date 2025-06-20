@@ -27,7 +27,7 @@ module.exports = (function() {
   }
 
   modtask.run = async queryObject => {
-    let { workspaceFullname, message, runId } = queryObject;
+    let { workspaceFullname, message, runId, apply } = queryObject;
     if (!message) message = '';
     let currentRun = null;
     if (runId) {
@@ -54,8 +54,14 @@ module.exports = (function() {
     }
     do {
       currentRun = await modtask.apiCall(`/runs/${currentRun.id}`);
-      console.log(currentRun.attributes.status);
-    } while(['planned_and_finished', 'applied', 'errored'].indexOf(currentRun.attributes.status) === -1);
+      const { status } = currentRun.attributes;
+      console.log(`Run ${currentRun.id} status: ${status}`);
+      if (status == 'planned' && apply) {
+        const applyStatus = await modtask.apiCall(`/runs/${currentRun.id}/actions/apply`, { comment: '' }, 'POST');
+        console.log('requested apply', applyStatus);
+        apply = false;
+      }
+    } while(['planned_and_finished', 'applied', 'errored', 'discarded'].indexOf(currentRun.attributes.status) === -1);
     return { success: true, data: 'done' };
   }
 
@@ -166,7 +172,7 @@ module.exports = (function() {
         body: typeof(body) === 'object' ? JSON.stringify(body) : body
       }]
     ]);
-    if ([200, 201].indexOf(outcome.status) === -1) {
+    if ([200, 201, 202].indexOf(outcome.status) === -1) {
       throw { reason: outcome.responseText };
     }
     let { data, links } = outcome.response;
