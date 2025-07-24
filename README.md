@@ -159,7 +159,14 @@ To generate a new and fresh SSHSSO link do:
 
     $IZYDEVOPS_PATH/apps/vpn/gensshsso.sh $CONTAINER_ID
     
-Follow the instructions to setup SSH connection. 
+Follow the instructions to setup SSH connection. To get the current connections, along with usernames and IPs use:
+
+    $IZYDEVOPS_PATH/apps/vpn/listssoconnections.sh $CONTAINER_ID
+    
+To kill the connections:
+
+        $IZYDEVOPS_PATH/apps/vpn/killssoconnections.sh $CONTAINER_ID
+    
 
 # Working with RSYNC to copy and move files around
 If you have SSH access to the containers use:
@@ -516,6 +523,7 @@ To build runtimes
 # ChangeLog
 
 ## V7.5
+* 75000019: security use seperate user for sso link, add management scripts
 * 75000018: sample implementation for apps/vpn server
 * 75000017: terraform - bug fixes 
 * 75000016: add support for aws ecs
