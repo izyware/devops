@@ -114,14 +114,17 @@ You can access the ssh scripts by the ssh prefix:
 If your containers dont have key-pair setup, create the key-pair and push to the remote server:
 
     cd CONTAINER_DIR;
-    ssh-keygen -f ./id_rsa
+    ssh-keygen -t rsa -b 2048 -N "" -C "" -f ./id_rsa
     chmod 400 id_rsa*
     mv id_rsa* config   
     ssh-copy-id -i ./config/id_rsa.pub user@server
     
+Note: by default, ssh-keygen embeds your username and hostname (e.g. youruser@yourhost) as a comment at the end of the public key file. This is purely informational and not required for SSH authentication. Using -C is recommended to disable this behavior.
+    
 Then test it with
 
     izy.devops "ssh?shell . 
+    
     
 ## pem file permissions
 You may get the following error when trying to SSH into the EC2 instance:
@@ -135,6 +138,29 @@ To fix this chmod to
 
     chmod 400 private.pem
     
+    
+## Provisioning VPN container with SSHSSO capabilities
+Make sure to symlink the VPN project to your CONTAINER working directory:
+
+    export CONTAINER_ID=~/izyware/izy-idman-tools/id/_id_/host;
+    export IZYDEVOPS_PATH=PATH;
+    ln -s $IZYDEVOPS_PATH/apps/vpn/*.tf $CONTAINER_ID/;
+    
+This will allow you to place the state and .terraform/ directories inside the container directory:
+
+    cd $CONTAINER_ID;
+    terraform init;
+    terraform apply -var="container_id=$CONTAINER_ID"
+    terraform destroy; 
+    
+Note that ./config/machine_address, ./config/username will be updated after the apply action. 
+
+To generate a new and fresh SSHSSO link do:
+
+    $IZYDEVOPS_PATH/apps/vpn/gensshsso.sh $CONTAINER_ID
+    
+Follow the instructions to setup SSH connection. 
+
 # Working with RSYNC to copy and move files around
 If you have SSH access to the containers use:
 
@@ -490,6 +516,7 @@ To build runtimes
 # ChangeLog
 
 ## V7.5
+* 75000018: sample implementation for apps/vpn server
 * 75000017: terraform - bug fixes 
 * 75000016: add support for aws ecs
 * 75000015: add support for log parsers and themes. 
