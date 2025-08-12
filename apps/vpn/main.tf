@@ -18,13 +18,13 @@ provider "aws" {
 }
 
 resource "aws_key_pair" "example" {
-  key_name   = "my-key"
+  key_name   = "izy.devops.apps.vpn/${base64encode(var.container_id)}"
   
   public_key = file("${var.container_id}/config/id_rsa.pub") # Use your existing SSH public key
 }
 
 resource "aws_security_group" "ssh_sg" {
-  name        = "ssh and tcp access"
+  name        = "ssh and tcp access for ${base64encode(var.container_id)}"
   description = "Allow from anywhere"
 
   ingress {
