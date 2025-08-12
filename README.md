@@ -107,7 +107,7 @@ You can access the ssh scripts by the ssh prefix:
     izy.devops "ssh?socksproxy" MACHINE_ID
     
     [container] izy.devops "ssh?publishport" $HOME/vpn 8022
-    [vpn] izy.devops "ssh?localforward" .
+    [vpn] izy.devops "ssh?localforward" . [port_to_forward]
     [local] izy.devops "ssh?socksproxy" . remote
     
 
@@ -534,7 +534,7 @@ To build runtimes
 # ChangeLog
 
 ## V7.5
-* 75000022: apps/vpn: ssh access to remote container from local
+* 75000022: ssh/localforward: allow specifying the port 
 * 75000021: ssh: make identity files optional
     * support for remote containers that allow auto login without identity files
 * 75000020: apps/vpn: make the resource names unique to allow side by side deployments
