@@ -29,4 +29,9 @@ if [[ -f $BASEDIR/config/sshport ]]; then
   SSHPORT="-p `cat $BASEDIR/config/sshport`"
 fi
 
-SSH_OPTIONS_CLI="-o StrictHostKeyChecking=no -o ServerAliveInterval=60"
+SSH_OPTIONS_IDENTITY_FILE=
+if [[ -f $BASEDIR/config/id_rsa ]]; then
+  SSH_OPTIONS_IDENTITY_FILE="-i $BASEDIR/config/id_rsa"
+fi
+
+SSH_OPTIONS_CLI="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ServerAliveInterval=60"

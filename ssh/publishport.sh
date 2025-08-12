@@ -12,4 +12,4 @@ fi
 echo port $LOCAL_PORT is being made available as $REMOTE_PORT
 # add -f to run in background. The current implementation will block until an error
 # add -v for verbose output
-ssh -i $BASEDIR/config/id_rsa -o ExitOnForwardFailure=yes -N $SSH_OPTIONS_CLI -R $REMOTE_PORT:localhost:$LOCAL_PORT $SSHPORT $SSHUSERNAME_AT_MACHINE
+ssh $SSH_OPTIONS_IDENTITY_FILE -o ExitOnForwardFailure=yes -N $SSH_OPTIONS_CLI -R $REMOTE_PORT:localhost:$LOCAL_PORT $SSHPORT $SSHUSERNAME_AT_MACHINE
