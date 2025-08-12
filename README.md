@@ -142,30 +142,41 @@ To fix this chmod to
 ## Provisioning VPN container with SSHSSO capabilities
 Make sure to symlink the VPN project to your CONTAINER working directory:
 
-    export CONTAINER_ID=~/izyware/izy-idman-tools/id/_id_/host;
+    export VPN_ID=~/izyware/izy-idman-tools/id/_id_/vpn;
+    export CONTAINER_ID=~/izyware/izy-idman-tools/id/_id_/container;
     export IZYDEVOPS_PATH=PATH;
-    ln -s $IZYDEVOPS_PATH/apps/vpn/*.tf $CONTAINER_ID/;
+    ln -s $IZYDEVOPS_PATH/apps/vpn/*.tf $VPN_ID/;
     
 This will allow you to place the state and .terraform/ directories inside the container directory:
 
-    cd $CONTAINER_ID;
+    cd $VPN_ID;
     terraform init;
-    terraform apply -var="container_id=$CONTAINER_ID"
+    terraform apply -var="container_id=$VPN_ID"
     terraform destroy; 
     
 Note that ./config/machine_address, ./config/username will be updated after the apply action. 
 
 To generate a new and fresh SSHSSO link do:
 
-    $IZYDEVOPS_PATH/apps/vpn/gensshsso.sh $CONTAINER_ID
+    $IZYDEVOPS_PATH/apps/vpn/gensshsso.sh $VPN_ID $CONTAINER_ID
+    
+This will set the machine address for the CONTAINER to the same as the VPN.
     
 Follow the instructions to setup SSH connection. To get the current connections, along with usernames and IPs use:
 
-    $IZYDEVOPS_PATH/apps/vpn/listssoconnections.sh $CONTAINER_ID
+    $IZYDEVOPS_PATH/apps/vpn/listssoconnections.sh $VPN_ID
     
 To kill the connections:
 
-        $IZYDEVOPS_PATH/apps/vpn/killssoconnections.sh $CONTAINER_ID
+    $IZYDEVOPS_PATH/apps/vpn/killssoconnections.sh $VPN_ID
+    
+Eventually you should be able to do 
+
+
+    izy.devops "ssh?localforward" $VPN_ID [port_to_forward]
+    izy.devops "ssh?shell" $CONTAINER_ID
+    
+    
     
 
 # Working with RSYNC to copy and move files around
@@ -523,6 +534,10 @@ To build runtimes
 # ChangeLog
 
 ## V7.5
+* 75000022: apps/vpn: ssh access to remote container from local
+* 75000021: ssh: make identity files optional
+    * support for remote containers that allow auto login without identity files
+* 75000020: apps/vpn: make the resource names unique to allow side by side deployments
 * 75000019: security use seperate user for sso link, add management scripts
 * 75000018: sample implementation for apps/vpn server
 * 75000017: terraform - bug fixes 
